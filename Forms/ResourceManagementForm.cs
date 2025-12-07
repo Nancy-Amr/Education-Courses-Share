@@ -2,9 +2,9 @@
 using CoursesSharesDB.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace CoursesSharesDB.Forms
 {
@@ -18,9 +18,40 @@ namespace CoursesSharesDB.Forms
             InitializeComponent();
             _repository = new Repository();
             _bindingSource = new BindingSource();
-            LoadResources();
+            
+            ApplyModernStyle();
+            
             LoadComboBoxes();
-            SetupDataGridView();
+            LoadResources();
+            
+            // Anchoring
+            this.Load += (s, e) => ApplyAnchoring();
+        }
+
+        private void ApplyModernStyle()
+        {
+            dataGridViewResources.EnableHeadersVisualStyles = false;
+            dataGridViewResources.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(40, 167, 69); // Green theme for resources
+            dataGridViewResources.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridViewResources.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            dataGridViewResources.DefaultCellStyle.Font = new Font("Segoe UI", 9);
+            
+            // Disable manual ID entry
+            txtId.ReadOnly = true;
+            txtId.BackColor = SystemColors.ControlLight;
+            txtId.Text = "Auto-Generated";
+        }
+
+        private void ApplyAnchoring()
+        {
+            dataGridViewResources.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            grpDetails.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pnlControls.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            
+            // Expand name/desc fields
+            txtName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtContentUrl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         }
 
         private void LoadResources()
@@ -31,486 +62,238 @@ namespace CoursesSharesDB.Forms
                 _bindingSource.DataSource = resources;
                 dataGridViewResources.DataSource = _bindingSource;
                 lblTotalResources.Text = $"Total Resources: {resources.Count}";
+                SetupDataGridViewColumns();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading resources: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error loading resources: " + ex.Message);
+            }
+        }
+
+        private void SetupDataGridViewColumns()
+        {
+            dataGridViewResources.AutoGenerateColumns = false;
+            // Ensure columns exist (usually done in Designer, but safety check here)
+            if (dataGridViewResources.Columns.Count == 0)
+            {
+                 // Add columns programmatically if Designer didn't
+                 dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Id", HeaderText = "ID", Width = 50 });
+                 dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Name", HeaderText = "Name", Width = 200 });
+                 dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "CourseCode", HeaderText = "Course", Width = 80 });
+                 dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "UploaderUsername", HeaderText = "Uploader", Width = 100 });
+                 dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "UploadDate", HeaderText = "Date", Width = 100 });
             }
         }
 
         private void LoadComboBoxes()
         {
-            try
-            {
-                // Load courses
-                var courses = _repository.GetAllCourses();
-                cmbCourseCode.DataSource = new List<Course>(courses);
-                cmbCourseCode.DisplayMember = "Code";
-                cmbCourseCode.ValueMember = "Code";
+            // Course Codes
+            var courses = _repository.GetAllCourses();
+            cmbCourseCode.DataSource = courses;
+            cmbCourseCode.DisplayMember = "Code";
+            cmbCourseCode.ValueMember = "Code";
 
-                // Load categories
-                var categories = _repository.GetAllCategories();
-                cmbCategory.DataSource = new List<ResourceCategory>(categories);
-                cmbCategory.DisplayMember = "Name";
-                cmbCategory.ValueMember = "Id";
+            // Categories
+            var categories = _repository.GetAllCategories();
+            cmbCategory.DataSource = categories;
+            cmbCategory.DisplayMember = "Name";
+            cmbCategory.ValueMember = "Id";
 
-                // Load users for uploader
-                var users = _repository.GetAllUsers();
-                cmbUploader.DataSource = new List<User>(users);
-                cmbUploader.DisplayMember = "Username";
-                cmbUploader.ValueMember = "Username";
+            // Uploaders (Users)
+            var users = _repository.GetAllUsers();
+            cmbUploader.DataSource = users;
+            cmbUploader.DisplayMember = "Username";
+            cmbUploader.ValueMember = "Username";
 
-                // Load content types
-                cmbContentType.Items.AddRange(new string[] { "file", "link", "video", "document" });
-
-                // Load file types
-                cmbFileType.Items.AddRange(new string[] { "pdf", "docx", "pptx", "xlsx", "csv", "txt", "zip" });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading combobox data: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void SetupDataGridView()
-        {
-            dataGridViewResources.AutoGenerateColumns = false;
-            dataGridViewResources.Columns.Clear();
-
-            // Configure columns
-            dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "Id",
-                HeaderText = "ID",
-                Width = 50
-            });
-
-            dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "Name",
-                HeaderText = "Resource Name",
-                Width = 200
-            });
-
-            dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "CourseCode",
-                HeaderText = "Course Code",
-                Width = 80
-            });
-
-            dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "UploaderUsername",
-                HeaderText = "Uploader",
-                Width = 100
-            });
-
-            dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "UploadDate",
-                HeaderText = "Upload Date",
-                Width = 100
-            });
-
-            dataGridViewResources.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "CategoryId",
-                HeaderText = "Category ID",
-                Width = 80
-            });
+            // Static Types
+            cmbContentType.Items.Clear();
+            cmbContentType.Items.AddRange(new string[] { "File", "Link", "Video", "Document" });
+            
+            cmbFileType.Items.Clear();
+            cmbFileType.Items.AddRange(new string[] { "PDF", "DOCX", "PPTX", "TXT", "ZIP", "None" });
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if (!ValidateInputs())
-                return;
+            if (!ValidateInputs()) return;
 
             try
             {
-                var topicsList = new List<int>();
-                if (!string.IsNullOrEmpty(txtTopics.Text))
-                {
-                    topicsList = txtTopics.Text.Split(',')
-                        .Select(t => int.TryParse(t.Trim(), out int result) ? result : 0)
-                        .Where(id => id > 0)
-                        .ToList();
-                }
-
-                var reactionsList = new List<string>();
-                if (!string.IsNullOrEmpty(txtReactions.Text))
-                {
-                    reactionsList = txtReactions.Text.Split(',')
-                        .Select(r => r.Trim())
-                        .Where(r => !string.IsNullOrEmpty(r))
-                        .ToList();
-                }
-
                 var resource = new Resource
                 {
-                    Id = int.Parse(txtId.Text),
-                    Name = txtName.Text,
-                    Description = txtDescription.Text,
-                    CourseCode = cmbCourseCode.Text,
-                    UploaderUsername = cmbUploader.Text,
-                    CategoryId = ((ResourceCategory)cmbCategory.SelectedItem).Id,
+                    Id = _repository.GetNextResourceId(), // Auto-generate ID
+                    Name = txtName.Text.Trim(),
+                    Description = txtDescription.Text.Trim(),
+                    CourseCode = cmbCourseCode.SelectedValue.ToString(),
+                    UploaderUsername = cmbUploader.SelectedValue.ToString(),
+                    CategoryId = (int)cmbCategory.SelectedValue,
                     UploadDate = dtpUploadDate.Value,
                     Content = new Content
                     {
                         Type = cmbContentType.Text,
-                        Url = txtContentUrl.Text,
+                        Url = txtContentUrl.Text.Trim(),
                         FileType = cmbFileType.Text
                     },
-                    Topics = topicsList,
-                    Reactions = reactionsList
+                    Topics = ParseTopics(txtTopics.Text),
+                    Reactions = ParseReactions(txtReactions.Text)
                 };
 
                 _repository.InsertResource(resource);
+                MessageBox.Show("Resource added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LoadResources();
                 ClearForm();
-                MessageBox.Show("Resource added successfully!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error adding resource: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error adding resource: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (dataGridViewResources.CurrentRow == null)
-            {
-                MessageBox.Show("Please select a resource to update.", "Warning",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (!ValidateInputs())
-                return;
+            if (dataGridViewResources.CurrentRow == null) return;
+            if (!ValidateInputs()) return;
 
             try
             {
-                var selectedResource = (Resource)dataGridViewResources.CurrentRow.DataBoundItem;
+                var currentRes = (Resource)dataGridViewResources.CurrentRow.DataBoundItem;
+                
+                // Update properties
+                currentRes.Name = txtName.Text.Trim();
+                currentRes.Description = txtDescription.Text.Trim();
+                currentRes.CourseCode = cmbCourseCode.SelectedValue.ToString();
+                currentRes.UploaderUsername = cmbUploader.SelectedValue.ToString();
+                currentRes.CategoryId = (int)cmbCategory.SelectedValue;
+                currentRes.UploadDate = dtpUploadDate.Value;
+                currentRes.Content.Type = cmbContentType.Text;
+                currentRes.Content.Url = txtContentUrl.Text.Trim();
+                currentRes.Content.FileType = cmbFileType.Text;
+                currentRes.Topics = ParseTopics(txtTopics.Text);
+                currentRes.Reactions = ParseReactions(txtReactions.Text);
 
-                var topicsList = new List<int>();
-                if (!string.IsNullOrEmpty(txtTopics.Text))
+                if (_repository.UpdateResource(currentRes))
                 {
-                    topicsList = txtTopics.Text.Split(',')
-                        .Select(t => int.TryParse(t.Trim(), out int result) ? result : 0)
-                        .Where(id => id > 0)
-                        .ToList();
-                }
-
-                var reactionsList = new List<string>();
-                if (!string.IsNullOrEmpty(txtReactions.Text))
-                {
-                    reactionsList = txtReactions.Text.Split(',')
-                        .Select(r => r.Trim())
-                        .Where(r => !string.IsNullOrEmpty(r))
-                        .ToList();
-                }
-
-                selectedResource.Name = txtName.Text;
-                selectedResource.Description = txtDescription.Text;
-                selectedResource.CourseCode = cmbCourseCode.Text;
-                selectedResource.UploaderUsername = cmbUploader.Text;
-                selectedResource.CategoryId = ((ResourceCategory)cmbCategory.SelectedItem).Id;
-                selectedResource.UploadDate = dtpUploadDate.Value;
-                selectedResource.Content = new Content
-                {
-                    Type = cmbContentType.Text,
-                    Url = txtContentUrl.Text,
-                    FileType = cmbFileType.Text
-                };
-                selectedResource.Topics = topicsList;
-                selectedResource.Reactions = reactionsList;
-
-                if (_repository.UpdateResource(selectedResource))
-                {
+                    MessageBox.Show("Resource updated successfully!");
                     LoadResources();
-                    MessageBox.Show("Resource updated successfully!", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Failed to update resource.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ClearForm();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error updating resource: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error updating: {ex.Message}");
             }
+        }
+
+        // Helper to parse comma-separated integers safely
+        private List<int> ParseTopics(string input)
+        {
+            var list = new List<int>();
+            if (string.IsNullOrWhiteSpace(input)) return list;
+            
+            var parts = input.Split(',');
+            foreach(var part in parts)
+            {
+                if(int.TryParse(part.Trim(), out int id)) list.Add(id);
+            }
+            return list;
+        }
+
+        // Helper to parse comma-separated strings
+        private List<string> ParseReactions(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return new List<string>();
+            return input.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (dataGridViewResources.CurrentRow == null)
+            if (dataGridViewResources.CurrentRow == null) return;
+            var res = (Resource)dataGridViewResources.CurrentRow.DataBoundItem;
+            
+            if (MessageBox.Show($"Delete resource '{res.Name}'?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                MessageBox.Show("Please select a resource to delete.", "Warning",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            var selectedResource = (Resource)dataGridViewResources.CurrentRow.DataBoundItem;
-
-            var result = MessageBox.Show($"Are you sure you want to delete resource '{selectedResource.Name}'?",
-                "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-            if (result == DialogResult.Yes)
-            {
-                try
-                {
-                    if (_repository.DeleteResource(selectedResource.Id))
-                    {
-                        LoadResources();
-                        ClearForm();
-                        MessageBox.Show("Resource deleted successfully!", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Failed to delete resource.", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error deleting resource: {ex.Message}", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                _repository.DeleteResource(res.Id);
+                LoadResources();
+                ClearForm();
             }
         }
 
         private void dataGridViewResources_SelectionChanged(object sender, EventArgs e)
         {
-            if (dataGridViewResources.CurrentRow != null && dataGridViewResources.CurrentRow.DataBoundItem is Resource selectedResource)
-            {
-                LoadResourceDetails(selectedResource);
-            }
-        }
+            if (dataGridViewResources.CurrentRow == null) return;
+            var res = (Resource)dataGridViewResources.CurrentRow.DataBoundItem;
 
-        private void LoadResourceDetails(Resource resource)
-        {
-            txtId.Text = resource.Id.ToString();
-            txtName.Text = resource.Name;
-            txtDescription.Text = resource.Description;
-
-            // Set course code
-            if (cmbCourseCode.Items.Count > 0)
+            txtId.Text = res.Id.ToString();
+            txtName.Text = res.Name;
+            txtDescription.Text = res.Description;
+            cmbCourseCode.SelectedValue = res.CourseCode;
+            cmbUploader.SelectedValue = res.UploaderUsername;
+            cmbCategory.SelectedValue = res.CategoryId;
+            dtpUploadDate.Value = res.UploadDate;
+            
+            if (res.Content != null)
             {
-                for (int i = 0; i < cmbCourseCode.Items.Count; i++)
-                {
-                    var course = (Course)cmbCourseCode.Items[i];
-                    if (course.Code == resource.CourseCode)
-                    {
-                        cmbCourseCode.SelectedIndex = i;
-                        break;
-                    }
-                }
+                cmbContentType.Text = res.Content.Type;
+                txtContentUrl.Text = res.Content.Url;
+                cmbFileType.Text = res.Content.FileType;
             }
 
-            // Set category
-            if (cmbCategory.Items.Count > 0)
-            {
-                for (int i = 0; i < cmbCategory.Items.Count; i++)
-                {
-                    var category = (ResourceCategory)cmbCategory.Items[i];
-                    if (category.Id == resource.CategoryId)
-                    {
-                        cmbCategory.SelectedIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            // Set uploader
-            if (cmbUploader.Items.Count > 0)
-            {
-                for (int i = 0; i < cmbUploader.Items.Count; i++)
-                {
-                    var user = (User)cmbUploader.Items[i];
-                    if (user.Username == resource.UploaderUsername)
-                    {
-                        cmbUploader.SelectedIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            dtpUploadDate.Value = resource.UploadDate;
-
-            // Set content details
-            if (resource.Content != null)
-            {
-                cmbContentType.Text = resource.Content.Type;
-                txtContentUrl.Text = resource.Content.Url;
-                cmbFileType.Text = resource.Content.FileType;
-            }
-
-            // Set topics
-            if (resource.Topics != null && resource.Topics.Count > 0)
-            {
-                txtTopics.Text = string.Join(", ", resource.Topics);
-            }
-            else
-            {
-                txtTopics.Text = "";
-            }
-
-            // Set reactions
-            if (resource.Reactions != null && resource.Reactions.Count > 0)
-            {
-                txtReactions.Text = string.Join(", ", resource.Reactions);
-            }
-            else
-            {
-                txtReactions.Text = "";
-            }
+            txtTopics.Text = string.Join(", ", res.Topics);
+            txtReactions.Text = string.Join(", ", res.Reactions);
         }
 
         private bool ValidateInputs()
         {
-            if (string.IsNullOrWhiteSpace(txtId.Text))
-            {
-                MessageBox.Show("Please enter a Resource ID.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtId.Focus();
-                return false;
-            }
-
-            if (!int.TryParse(txtId.Text, out int id) || id <= 0)
-            {
-                MessageBox.Show("Resource ID must be a positive integer.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtId.Focus();
-                return false;
-            }
-
             if (string.IsNullOrWhiteSpace(txtName.Text))
             {
-                MessageBox.Show("Please enter a Resource Name.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtName.Focus();
+                MessageBox.Show("Name is required.");
                 return false;
             }
-
-            if (cmbCourseCode.SelectedItem == null)
+            if (cmbCourseCode.SelectedIndex == -1)
             {
-                MessageBox.Show("Please select a Course.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                cmbCourseCode.Focus();
+                MessageBox.Show("Select a Course.");
                 return false;
             }
-
-            if (cmbUploader.SelectedItem == null)
+            if (cmbCategory.SelectedIndex == -1)
             {
-                MessageBox.Show("Please select an Uploader.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                cmbUploader.Focus();
+                MessageBox.Show("Select a Category.");
                 return false;
             }
-
-            if (cmbCategory.SelectedItem == null)
-            {
-                MessageBox.Show("Please select a Category.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                cmbCategory.Focus();
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(cmbContentType.Text))
-            {
-                MessageBox.Show("Please select a Content Type.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                cmbContentType.Focus();
-                return false;
-            }
-
             return true;
         }
 
         private void ClearForm()
         {
-            txtId.Clear();
+            txtId.Text = "Auto-Generated";
             txtName.Clear();
             txtDescription.Clear();
             cmbCourseCode.SelectedIndex = -1;
-            cmbUploader.SelectedIndex = -1;
             cmbCategory.SelectedIndex = -1;
-            dtpUploadDate.Value = DateTime.Now;
-            cmbContentType.SelectedIndex = -1;
+            cmbUploader.SelectedIndex = -1;
             txtContentUrl.Clear();
-            cmbFileType.SelectedIndex = -1;
             txtTopics.Clear();
             txtReactions.Clear();
+            dtpUploadDate.Value = DateTime.Now;
         }
 
-        private void btnClear_Click(object sender, EventArgs e)
-        {
-            ClearForm();
-        }
+        private void btnClear_Click(object sender, EventArgs e) => ClearForm();
+        private void btnClose_Click(object sender, EventArgs e) => Close();
 
+        // Search Handlers
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            try
-            {
-                var allResources = _repository.GetAllResources();
-                var filteredResources = allResources;
-
-                // Filter by name
-                if (!string.IsNullOrWhiteSpace(txtSearchName.Text))
-                {
-                    filteredResources = filteredResources
-                        .Where(r => r.Name.Contains(txtSearchName.Text, StringComparison.OrdinalIgnoreCase))
-                        .ToList();
-                }
-
-                // Filter by course code
-                if (!string.IsNullOrWhiteSpace(txtSearchCourseCode.Text))
-                {
-                    filteredResources = filteredResources
-                        .Where(r => r.CourseCode.Equals(txtSearchCourseCode.Text, StringComparison.OrdinalIgnoreCase))
-                        .ToList();
-                }
-
-                // Filter by uploader
-                if (!string.IsNullOrWhiteSpace(txtSearchUploader.Text))
-                {
-                    filteredResources = filteredResources
-                        .Where(r => r.UploaderUsername.Contains(txtSearchUploader.Text, StringComparison.OrdinalIgnoreCase))
-                        .ToList();
-                }
-
-                _bindingSource.DataSource = filteredResources;
-                dataGridViewResources.DataSource = _bindingSource;
-
-                lblSearchResults.Text = $"Found {filteredResources.Count} resource(s)";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error searching resources: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            var list = _repository.GetAllResources();
+            if (!string.IsNullOrWhiteSpace(txtSearchName.Text))
+                list = list.Where(r => r.Name.ToLower().Contains(txtSearchName.Text.ToLower())).ToList();
+            
+            _bindingSource.DataSource = list;
+            dataGridViewResources.DataSource = _bindingSource;
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadResources();
             txtSearchName.Clear();
-            txtSearchCourseCode.Clear();
-            txtSearchUploader.Clear();
-            lblSearchResults.Text = "";
-        }
-
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
+            LoadResources();
         }
     }
 }
