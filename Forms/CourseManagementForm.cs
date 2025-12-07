@@ -2,6 +2,7 @@
 using CoursesSharesDB.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing; // for UI colors
 using System.Linq;
 using System.Windows.Forms;
 
@@ -13,146 +14,138 @@ namespace CoursesSharesDB.Forms
         private List<Department> _departments;
         private readonly BindingSource _bindingSource;
 
-        // Constructor
         public CourseManagementForm()
         {
             InitializeComponent();
             _repository = new Repository();
             _bindingSource = new BindingSource();
+            
+            // UI Styling
+            ApplyModernStyle();
 
-            // Initial data load setup
             LoadFormData();
+            
+            // Event Wiring
+            this.dataGridViewCourses.SelectionChanged += new EventHandler(this.dataGridViewCourses_SelectionChanged);
+            this.dataGridViewCourses.CellClick += new DataGridViewCellEventHandler(this.dataGridViewCourses_CellClick);
+            this.Load += (s, e) => ApplyAnchoring(); // Apply resizing logic on load
 
-            // Link DataGridView events to methods that load data into controls
-            this.dataGridViewCourses.SelectionChanged += new System.EventHandler(this.dataGridViewCourses_SelectionChanged);
-            this.dataGridViewCourses.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewCourses_CellClick);
+            CheckPermissions();
+        }
 
+        private void ApplyModernStyle()
+        {
+            // Flat look for DataGridView
+            dataGridViewCourses.EnableHeadersVisualStyles = false;
+            dataGridViewCourses.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 123, 255);
+            dataGridViewCourses.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridViewCourses.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            dataGridViewCourses.DefaultCellStyle.Font = new Font("Segoe UI", 9);
+            dataGridViewCourses.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
+        }
+
+        private void ApplyAnchoring()
+        {
+            // Make grid expand
+            dataGridViewCourses.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            
+            // Keep buttons at the bottom
+            btnAdd.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnUpdate.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnClear.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnManageTopics.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+            // Keep details group at bottom
+            grpDetails.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            
+            // Make text boxes in details expand
+            txtName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtDescription.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lstInstructors.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        }
+
+        private void CheckPermissions()
+        {
             if (SessionManager.IsStudent)
             {
-                // Disable add/update/delete buttons for students
                 btnAdd.Enabled = false;
                 btnUpdate.Enabled = false;
                 btnDelete.Enabled = false;
                 btnManageTopics.Enabled = false;
-
-                // Change button colors to indicate disabled state
-                btnAdd.BackColor = System.Drawing.Color.Gray;
-                btnUpdate.BackColor = System.Drawing.Color.Gray;
-                btnDelete.BackColor = System.Drawing.Color.Gray;
-                btnManageTopics.BackColor = System.Drawing.Color.Gray;
-
-                // Show message
-                MessageBox.Show("Note: Students can only view courses. Management functions are disabled.",
-                    "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                // Visual cue for disabled state
+                btnAdd.BackColor = Color.LightGray;
+                btnUpdate.BackColor = Color.LightGray;
+                btnDelete.BackColor = Color.LightGray;
+                btnManageTopics.BackColor = Color.LightGray;
             }
         }
-
-        // --- Core Data Loading and Setup ---
 
         private void LoadFormData()
         {
             try
             {
                 _departments = _repository.GetAllDepartments();
-
-                // Setup Department ComboBoxes (assuming Department has a suitable ToString() or you set DisplayMember/ValueMember)
+                
+                // Setup Departments
                 cmbDepartments.DataSource = new List<Department>(_departments);
                 cmbDepartments.DisplayMember = "Name";
                 cmbDepartments.ValueMember = "Id";
 
-                cmbSearchDepartment.DataSource = new List<Department>(_departments);
+                // Setup Search Departments
+                var searchDepts = new List<Department>(_departments);
+                searchDepts.Insert(0, new Department { Id = -1, Name = "All Departments" }); // Add "All" option
+                cmbSearchDepartment.DataSource = searchDepts;
                 cmbSearchDepartment.DisplayMember = "Name";
                 cmbSearchDepartment.ValueMember = "Id";
 
-                // Pre-populate Instructors ListBox (assuming a list of instructors is available)
-                // If instructors aren't stored in the DB separately, this is a placeholder.
+                // Mock Instructors (You should ideally fetch these from a Users collection filtered by role)
                 lstInstructors.Items.Clear();
-                lstInstructors.Items.AddRange(new object[] { "Dr. Smith", "Prof. Johnson", "Ms. Davis", "Mr. Brown" });
+                var instructors = _repository.GetAllUsers().Where(u => u.Role == "instructor").ToList();
+                if(instructors.Any())
+                {
+                    foreach(var inst in instructors) lstInstructors.Items.Add(inst.Username);
+                }
+                else 
+                {
+                    // Fallback if no instructors in DB
+                    lstInstructors.Items.AddRange(new object[] { "Dr. Smith", "Prof. Johnson", "Ms. Davis" });
+                }
 
-                btnSearch_Click(null, null); // Run an initial search to populate the grid
-                UpdateTotalCourseCount();
-
-                ClearInputs();
+                btnSearch_Click(null, null);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during initial load: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error loading data: {ex.Message}", "System Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void UpdateTotalCourseCount()
         {
-            var courses = _repository.GetAllCourses();
-            lblTotalCourses.Text = $"Total Courses: {courses.Count}";
+            lblTotalCourses.Text = $"Total Courses: {dataGridViewCourses.Rows.Count}";
         }
-
-        // --- Validation and Input Methods ---
-
-        private bool ValidateInputs()
-        {
-            if (string.IsNullOrWhiteSpace(txtCode.Text) ||
-                string.IsNullOrWhiteSpace(txtName.Text) ||
-                cmbDepartments.SelectedItem == null ||
-                lstInstructors.CheckedItems.Count == 0)
-            {
-                MessageBox.Show("Please fill in Code, Name, select a Department, and at least one Instructor.", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-            return true;
-        }
-
-        // ❌ FIXED: Method required by btnClear event handler
-        private void ClearInputs()
-        {
-            txtCode.Clear();
-            txtName.Clear();
-            txtDescription.Clear();
-            cmbDepartments.SelectedIndex = -1;
-            for (int i = 0; i < lstInstructors.Items.Count; i++)
-            {
-                lstInstructors.SetItemChecked(i, false);
-            }
-        }
-
-        // --- CRUD Operations ---
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if (!ValidateInputs())
-                return;
+            if (!ValidateInputs()) return;
 
             try
             {
-                var selectedDepts = new List<object>();
-                if (cmbDepartments.SelectedItem != null)
+                // Verify uniqueness
+                if (_repository.GetCourseByCode(txtCode.Text.Trim()) != null)
                 {
-                    var dept = (Department)cmbDepartments.SelectedItem;
-                    selectedDepts.Add(dept.Id.ToString());
+                    MessageBox.Show("A course with this code already exists.", "Duplicate Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
 
-                var selectedInstructors = new List<string>();
-                foreach (string item in lstInstructors.CheckedItems)
-                {
-                    selectedInstructors.Add(item);
-                }
-
-                var course = new Course
-                {
-                    Code = txtCode.Text.Trim(),
-                    Name = txtName.Text.Trim(),
-                    Description = txtDescription.Text.Trim(),
-                    Departments = selectedDepts,
-                    InstructorNames = selectedInstructors,
-                    Topics = new List<Course.Topic>()
-                };
-
+                var course = CreateCourseFromInput();
                 _repository.AddCourse(course);
 
+                MessageBox.Show("Course added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 btnSearch_Click(sender, e);
                 ClearInputs();
-
-                MessageBox.Show("Course added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -162,43 +155,26 @@ namespace CoursesSharesDB.Forms
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (dataGridViewCourses.CurrentRow == null)
-            {
-                MessageBox.Show("Please select a course to update.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (!ValidateInputs())
-                return;
+            if (dataGridViewCourses.CurrentRow == null) return;
+            if (!ValidateInputs()) return;
 
             try
             {
-                var selectedCourse = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
+                var originalCourse = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
+                var updatedCourse = CreateCourseFromInput();
+                
+                // Keep the original code and ID
+                updatedCourse.Id = originalCourse.Id;
+                updatedCourse.Code = originalCourse.Code; 
+                // Preserve topics as they aren't edited here
+                updatedCourse.Topics = originalCourse.Topics;
 
-                var selectedDepts = new List<object>();
-                if (cmbDepartments.SelectedItem != null)
+                if(_repository.UpdateCourse(updatedCourse))
                 {
-                    var dept = (Department)cmbDepartments.SelectedItem;
-                    selectedDepts.Add(dept.Id.ToString());
+                    MessageBox.Show("Course updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    btnSearch_Click(sender, e);
+                    ClearInputs();
                 }
-
-                var selectedInstructors = new List<string>();
-                foreach (string item in lstInstructors.CheckedItems)
-                {
-                    selectedInstructors.Add(item);
-                }
-
-                selectedCourse.Name = txtName.Text.Trim();
-                selectedCourse.Description = txtDescription.Text.Trim();
-                selectedCourse.Departments = selectedDepts;
-                selectedCourse.InstructorNames = selectedInstructors;
-
-                _repository.UpdateCourse(selectedCourse);
-
-                btnSearch_Click(sender, e);
-                ClearInputs();
-
-                MessageBox.Show("Course updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -206,186 +182,163 @@ namespace CoursesSharesDB.Forms
             }
         }
 
-        // ❌ FIXED: Method required by btnDelete event handler
-        private void btnDelete_Click(object sender, EventArgs e)
+        private Course CreateCourseFromInput()
         {
-            if (dataGridViewCourses.CurrentRow == null)
+            var selectedDepts = new List<object>();
+            if (cmbDepartments.SelectedItem != null)
             {
-                MessageBox.Show("Please select a course to delete.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                // Store the ID as string to be consistent with your existing data structure
+                var dept = (Department)cmbDepartments.SelectedItem;
+                selectedDepts.Add(dept.Id.ToString());
             }
 
-            var selectedCourse = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
-
-            var result = MessageBox.Show($"Are you sure you want to delete course '{selectedCourse.Name}' ({selectedCourse.Code})? This action cannot be undone.", "Confirm Deletion",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-            if (result == DialogResult.Yes)
+            var selectedInstructors = new List<string>();
+            foreach (string item in lstInstructors.CheckedItems)
             {
-                try
-                {
-                    _repository.DeleteCourse(selectedCourse.Code);
-
-                    btnSearch_Click(sender, e);
-                    ClearInputs();
-                    UpdateTotalCourseCount();
-
-                    MessageBox.Show("Course deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error deleting course: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                selectedInstructors.Add(item);
             }
+
+            return new Course
+            {
+                Code = txtCode.Text.Trim(),
+                Name = txtName.Text.Trim(),
+                Description = txtDescription.Text.Trim(),
+                Departments = selectedDepts,
+                InstructorNames = selectedInstructors,
+                Topics = new List<Course.Topic>()
+            };
         }
 
-        // --- Search and Refresh ---
+        private bool ValidateInputs()
+        {
+            if (string.IsNullOrWhiteSpace(txtCode.Text))
+            {
+                MessageBox.Show("Course Code is required.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txtName.Text))
+            {
+                MessageBox.Show("Course Name is required.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            return true;
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewCourses.CurrentRow == null) return;
+
+            var course = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
+            if (MessageBox.Show($"Delete course '{course.Name}'?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                _repository.DeleteCourse(course.Code);
+                btnSearch_Click(sender, e);
+                ClearInputs();
+            }
+        }
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            try
+            var courses = _repository.GetAllCourses();
+            
+            if (!string.IsNullOrWhiteSpace(txtSearchCode.Text))
+                courses = courses.Where(c => c.Code.IndexOf(txtSearchCode.Text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            
+            if (!string.IsNullOrWhiteSpace(txtSearchName.Text))
+                courses = courses.Where(c => c.Name.IndexOf(txtSearchName.Text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            
+            if (cmbSearchDepartment.SelectedIndex > 0) // Index 0 is "All"
             {
-                var allCourses = _repository.GetAllCourses();
-                var filteredCourses = allCourses;
-
-                // Filter by code
-                if (!string.IsNullOrWhiteSpace(txtSearchCode.Text))
-                {
-                    filteredCourses = filteredCourses
-                        .Where(c => c.Code.Contains(txtSearchCode.Text, StringComparison.OrdinalIgnoreCase))
-                        .ToList();
-                }
-
-                // Filter by name
-                if (!string.IsNullOrWhiteSpace(txtSearchName.Text))
-                {
-                    filteredCourses = filteredCourses
-                        .Where(c => c.Name.Contains(txtSearchName.Text, StringComparison.OrdinalIgnoreCase))
-                        .ToList();
-                }
-
-                // Filter by department
-                if (cmbSearchDepartment.SelectedItem != null && cmbSearchDepartment.SelectedIndex != -1)
-                {
-                    var selectedDept = (Department)cmbSearchDepartment.SelectedItem;
-                    filteredCourses = filteredCourses
-                        .Where(c => c.Departments?.Any(d =>
-                            d?.ToString() == selectedDept.Id.ToString() ||  // Use ToString()
-                            d?.ToString() == selectedDept.Name) == true)
-                        .ToList();
-                }
-
-                _bindingSource.DataSource = filteredCourses;
-                dataGridViewCourses.DataSource = _bindingSource;
-                dataGridViewCourses.Refresh();
-
-                lblSearchResults.Text = $"Found {filteredCourses.Count} course(s)";
-                UpdateTotalCourseCount();
+                var deptId = cmbSearchDepartment.SelectedValue.ToString();
+                courses = courses.Where(c => c.DepartmentStrings.Contains(deptId)).ToList();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error searching courses: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
+            _bindingSource.DataSource = courses;
+            dataGridViewCourses.DataSource = _bindingSource;
+            UpdateTotalCourseCount();
         }
 
-        // ❌ FIXED: Method required by btnRefresh event handler
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             txtSearchCode.Clear();
             txtSearchName.Clear();
-            cmbSearchDepartment.SelectedIndex = -1;
+            cmbSearchDepartment.SelectedIndex = 0;
             btnSearch_Click(sender, e);
         }
 
-        // --- DataGridView Events (Load data into details section) ---
-
-        private void LoadCourseDetails(Course course)
-        {
-            txtCode.Text = course.Code;
-            txtName.Text = course.Name;
-            txtDescription.Text = course.Description;
-            txtCode.ReadOnly = true; // Prevent editing the unique code on update
-
-            // Select department
-            if (course.Departments != null && course.Departments.Count > 0)
-            {
-                var deptKey = course.Departments[0]?.ToString();
-
-                Department dept = _departments
-                    .FirstOrDefault(d => d.Id.ToString() == deptKey || d.Name == deptKey);
-
-                cmbDepartments.SelectedItem = dept;
-            }
-            else
-            {
-                cmbDepartments.SelectedIndex = -1;
-            }
-
-            // Check instructors
-            for (int i = 0; i < lstInstructors.Items.Count; i++)
-            {
-                string instructor = lstInstructors.Items[i].ToString();
-                bool isChecked = course.InstructorNames?.Contains(instructor) ?? false;
-                lstInstructors.SetItemChecked(i, isChecked);
-            }
-        }
-
-        // ❌ FIXED: Method required by dataGridViewCourses_SelectionChanged event handler
-        private void dataGridViewCourses_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dataGridViewCourses.CurrentRow != null && dataGridViewCourses.CurrentRow.DataBoundItem is Course selectedCourse)
-            {
-                LoadCourseDetails(selectedCourse);
-            }
-        }
-
-        // ❌ FIXED: Method required by dataGridViewCourses_CellClick event handler
-        private void dataGridViewCourses_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0 && dataGridViewCourses.Rows[e.RowIndex].DataBoundItem is Course selectedCourse)
-            {
-                LoadCourseDetails(selectedCourse);
-            }
-        }
-
-        // --- Other Button Handlers ---
-
-        // ❌ FIXED: Method required by btnClear event handler
         private void btnClear_Click(object sender, EventArgs e)
         {
             ClearInputs();
-            txtCode.ReadOnly = false; // Allow editing code for new entries
+            txtCode.ReadOnly = false;
         }
 
-        // ❌ FIXED: Method required by btnManageTopics event handler
-        private void btnManageTopics_Click(object sender, EventArgs e)
+        private void ClearInputs()
         {
-            if (dataGridViewCourses.CurrentRow == null)
+            txtCode.Clear();
+            txtName.Clear();
+            txtDescription.Clear();
+            cmbDepartments.SelectedIndex = -1;
+            for (int i = 0; i < lstInstructors.Items.Count; i++) lstInstructors.SetItemChecked(i, false);
+        }
+
+        private void dataGridViewCourses_SelectionChanged(object sender, EventArgs e)
+        {
+            LoadSelectedCourse();
+        }
+
+        private void dataGridViewCourses_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            LoadSelectedCourse();
+        }
+
+        private void LoadSelectedCourse()
+        {
+            if (dataGridViewCourses.CurrentRow == null) return;
+            
+            var course = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
+            txtCode.Text = course.Code;
+            txtCode.ReadOnly = true; // Cannot change code of existing course
+            txtName.Text = course.Name;
+            txtDescription.Text = course.Description;
+
+            // Load Dept
+            if (course.DepartmentStrings.Count > 0)
             {
-                MessageBox.Show("Please select a course to manage topics for.", "Warning",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                // Try to find by ID
+                foreach(Department item in cmbDepartments.Items)
+                {
+                    if(item.Id.ToString() == course.DepartmentStrings[0])
+                    {
+                        cmbDepartments.SelectedItem = item;
+                        break;
+                    }
+                }
             }
 
-            var selectedCourse = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
-
-            // Assuming CourseTopicsForm exists and takes a Course object
-            using (var topicsForm = new CourseTopicsForm(selectedCourse))
+            // Load Instructors
+            for (int i = 0; i < lstInstructors.Items.Count; i++)
             {
-                topicsForm.ShowDialog();
+                string name = lstInstructors.Items[i].ToString();
+                lstInstructors.SetItemChecked(i, course.InstructorNames.Contains(name));
+            }
+        }
 
-                // If topics were modified, refresh the data in the grid
-                if (topicsForm.TopicsModified)
+        private void btnManageTopics_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewCourses.CurrentRow == null) return;
+            
+            var course = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
+            using (var form = new CourseTopicsForm(course))
+            {
+                form.ShowDialog();
+                if (form.TopicsModified)
                 {
+                    // Refresh data from DB to get updated topics
                     btnSearch_Click(sender, e);
                 }
             }
         }
 
-        // ❌ FIXED: Method required by btnClose event handler
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+        private void btnClose_Click(object sender, EventArgs e) => Close();
     }
 }
