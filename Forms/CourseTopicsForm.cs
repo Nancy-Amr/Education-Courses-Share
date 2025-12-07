@@ -48,44 +48,63 @@ namespace CoursesSharesDB.Forms
             }
         }
 
-        private void btnAddTopic_Click(object sender, EventArgs e)
+   private void btnAddTopic_Click(object sender, EventArgs e)
+{
+    // Validation
+    if (string.IsNullOrWhiteSpace(txtTopicName.Text))
+    {
+        MessageBox.Show("Please enter a topic name.", "Validation",
+            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+    }
+
+    try
+    {
+        //  Prepare the list if it's null 
+        if (_course.Topics == null)
         {
-            if (string.IsNullOrWhiteSpace(txtTopicName.Text))
-            {
-                MessageBox.Show("Please enter a topic name.", "Validation",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            try
-            {
-                var newTopicId = _course.Topics?.Count > 0 ? _course.Topics.Max(t => t.TopicId) + 1 : 1;
-                var newTopic = new Topic
-                {
-                    TopicId = newTopicId,
-                    Name = txtTopicName.Text.Trim(),
-                    CourseCode = _course.Code
-                };
-
-                _course.Topics.Add(newTopic);
-
-                // Update in database
-                var filter = Builders<Course>.Filter.Eq(c => c.Code, _course.Code);
-                var update = Builders<Course>.Update.Set(c => c.Topics, _course.Topics);
-                _context.Courses.UpdateOne(filter, update);
-
-                TopicsModified = true;
-                LoadTopics();
-                txtTopicName.Clear();
-                MessageBox.Show("Topic added successfully!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error adding topic: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            _course.Topics = new List<Topic>();
         }
+
+        //  Generate ID and Create Topic Object
+        var newTopicId = _course.Topics.Count > 0 ? _course.Topics.Max(t => t.TopicId) + 1 : 1;
+        var newTopic = new Topic
+        {
+            TopicId = newTopicId,
+            Name = txtTopicName.Text.Trim(),
+            CourseCode = _course.Code
+        };
+
+        //  Update the local object
+        _course.Topics.Add(newTopic);
+
+        // Save changes using the Repository
+        // useing the existing UpdateCourse method which handles the database logic
+        var repository = new Repository(); 
+        bool success = repository.UpdateCourse(_course);
+
+        if (success)
+        {
+            TopicsModified = true;
+            LoadTopics();
+            txtTopicName.Clear();
+            MessageBox.Show("Topic added successfully!", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        else
+        {
+            // Revert local change if DB update failed
+            _course.Topics.Remove(newTopic);
+            MessageBox.Show("Failed to save the topic to the database.", "Database Error",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"Error adding topic: {ex.Message}", "Error",
+            MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+}
 
         private void btnDeleteTopic_Click(object sender, EventArgs e)
         {
