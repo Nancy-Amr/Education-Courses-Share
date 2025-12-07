@@ -19,7 +19,6 @@
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label lblTeamInfo;
         private System.Windows.Forms.Button btnAdminTools;
 
         protected override void Dispose(bool disposing)
@@ -49,8 +48,8 @@
             btnSearch = new Button();
             btnExit = new Button();
             pictureBox1 = new PictureBox();
-            lblTeamInfo = new Label();
             btnLogout = new Button();
+            btnAdminTools = new Button();
             grpStatistics.SuspendLayout();
             grpNavigation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -221,7 +220,7 @@
             btnExit.FlatStyle = FlatStyle.Flat;
             btnExit.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnExit.ForeColor = Color.White;
-            btnExit.Location = new Point(575, 812);
+            btnExit.Location = new Point(573, 524);
             btnExit.Margin = new Padding(3, 4, 3, 4);
             btnExit.Name = "btnExit";
             btnExit.Size = new Size(150, 56);
@@ -240,30 +239,36 @@
             pictureBox1.TabIndex = 8;
             pictureBox1.TabStop = false;
             // 
-            // lblTeamInfo
-            // 
-            lblTeamInfo.AutoSize = true;
-            lblTeamInfo.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Italic, GraphicsUnit.Point, 0);
-            lblTeamInfo.Location = new Point(203, 831);
-            lblTeamInfo.Name = "lblTeamInfo";
-            lblTeamInfo.Size = new Size(297, 18);
-            lblTeamInfo.TabIndex = 9;
-            lblTeamInfo.Text = "Team 16 - Advanced Database Project 2025";
-            // 
             // btnLogout
             // 
             btnLogout.BackColor = Color.FromArgb(220, 53, 69);
             btnLogout.FlatStyle = FlatStyle.Flat;
             btnLogout.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnLogout.ForeColor = Color.White;
-            btnLogout.Location = new Point(40, 812);
+            btnLogout.Location = new Point(573, 656);
             btnLogout.Margin = new Padding(3, 4, 3, 4);
             btnLogout.Name = "btnLogout";
-            btnLogout.Size = new Size(120, 56);
+            btnLogout.Size = new Size(150, 56);
             btnLogout.TabIndex = 10;
             btnLogout.Text = "&Logout";
             btnLogout.UseVisualStyleBackColor = false;
             btnLogout.Click += btnLogout_Click;
+            // 
+            // btnAdminTools
+            // 
+            btnAdminTools.BackColor = Color.FromArgb(111, 66, 193);
+            btnAdminTools.FlatStyle = FlatStyle.Flat;
+            btnAdminTools.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAdminTools.ForeColor = Color.White;
+            btnAdminTools.Location = new Point(573, 588);
+            btnAdminTools.Margin = new Padding(3, 4, 3, 4);
+            btnAdminTools.Name = "btnAdminTools";
+            btnAdminTools.Size = new Size(150, 56);
+            btnAdminTools.TabIndex = 11;
+            btnAdminTools.Text = "&Admin Tools";
+            btnAdminTools.UseVisualStyleBackColor = false;
+            btnAdminTools.Visible = false;
+            btnAdminTools.Click += btnAdminTools_Click;
             // 
             // MainForm
             // 
@@ -271,7 +276,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(750, 900);
-            Controls.Add(lblTeamInfo);
             Controls.Add(pictureBox1);
             Controls.Add(btnExit);
             Controls.Add(grpNavigation);
@@ -279,6 +283,7 @@
             Controls.Add(lblWelcome);
             Controls.Add(lblTitle);
             Controls.Add(btnLogout);
+            Controls.Add(btnAdminTools);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Margin = new Padding(3, 4, 3, 4);
             MaximizeBox = false;

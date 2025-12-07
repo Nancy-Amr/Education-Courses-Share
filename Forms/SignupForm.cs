@@ -1,8 +1,9 @@
 ﻿// SignUpForm.cs
-using System;
-using System.Windows.Forms;
 using CoursesSharesDB.DAL;
 using CoursesSharesDB.Models;
+using Education_Courses.Helpers;
+using System;
+using System.Windows.Forms;
 
 namespace Education_Courses.Forms
 {
@@ -26,7 +27,7 @@ namespace Education_Courses.Forms
 
         private void PopulateRoles()
         {
-            cmbRole.Items.AddRange(new string[] { "student", "instructor", "dmin" });
+            cmbRole.Items.AddRange(new string[] { "student", "instructor", "admin" });
             cmbRole.SelectedIndex = 0; // Default to Student
         }
 
@@ -63,7 +64,7 @@ namespace Education_Courses.Forms
                 {
                     Username = txtUsername.Text.Trim(),
                     Email = txtEmail.Text.Trim(),
-                    Password = txtPassword.Text, // In production, hash this password
+                    Password = PasswordHelper.HashPassword(txtPassword.Text), // ✅ Hash here
                     Role = cmbRole.SelectedItem.ToString(),
                     ProfilePicture = txtProfilePic.Text.Trim(),
                     CreatedAt = DateTime.Now

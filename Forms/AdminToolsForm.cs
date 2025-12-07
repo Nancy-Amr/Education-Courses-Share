@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Education_Courses.Forms
+namespace CoursesSharesDB.Forms
 {
     public partial class AdminToolsForm : Form
     {
@@ -45,8 +45,8 @@ namespace Education_Courses.Forms
                 var enrollments = _repository.GetAllEnrollments();
 
                 lblTotalUsers.Text = users.Count.ToString();
-                lblTotalResources.Text = resources.Count.ToString();
-                lblTotalCourses.Text = courses.Count.ToString();
+                //lblTotalResources.Text = resources.Count.ToString();
+                //lblTotalCourses.Text = courses.Count.ToString();
                 lblTotalEnrollments.Text = enrollments.Count.ToString();
 
                 // Calculate active users (logged in last 7 days)
@@ -330,7 +330,7 @@ namespace Education_Courses.Forms
 
         private void btnUserManagement_Click(object sender, EventArgs e)
         {
-            var userManagementForm = new CoursesSharesDB.Forms.UserManagementForm();
+            var userManagementForm = new CoursesSharesDB.Forms.UserManagementForm("Admin");
             userManagementForm.ShowDialog();
             LoadStatistics(); // Refresh after changes
         }
@@ -405,6 +405,34 @@ namespace Education_Courses.Forms
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+        // Add this method to AdminToolsForm.cs class
+        private void btnAddUser_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Assuming you have a SignUpForm in your project
+                // Replace with your actual sign up form class
+                // var signUpForm = new SignUpForm();
+                // signUpForm.ShowDialog();
+
+                // If you don't have a SignUpForm yet, create a simple one or use MessageBox
+                MessageBox.Show("Redirecting to user registration form...\n\n" +
+                               "In a full implementation, this would open the Sign Up form\n" +
+                               "with admin privileges to create new users.",
+                               "Add New User",
+                               MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // For now, open the UserManagementForm in add mode
+                var userManagementForm = new CoursesSharesDB.Forms.UserManagementForm();
+                userManagementForm.ShowDialog();
+                LoadStatistics(); // Refresh after changes
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening user registration: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         private void btnEmergencyLockdown_Click(object sender, EventArgs e)
         {
@@ -424,6 +452,6 @@ namespace Education_Courses.Forms
                 }
             }
         }
-       
+        
     }
 }

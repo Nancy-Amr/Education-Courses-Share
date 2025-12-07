@@ -33,4 +33,5 @@ C:\Users\DCS\source\repos\Education-Courses\Education-Courses\obj\Debug\net8.0-w
 C:\Users\DCS\source\repos\Education-Courses\Education-Courses\obj\Debug\net8.0-windows\CoursesSharesDB.Forms.CourseTopicsForm.resources
 C:\Users\DCS\source\repos\Education-Courses\Education-Courses\obj\Debug\net8.0-windows\CoursesSharesDB.Forms.LoginForm.resources
 C:\Users\DCS\source\repos\Education-Courses\Education-Courses\obj\Debug\net8.0-windows\Education_Courses.Forms.SignUpForm.resources
-C:\Users\DCS\source\repos\Education-Courses\Education-Courses\obj\Debug\net8.0-windows\Education_Courses.Forms.AdminToolsForm.resources
+C:\Users\DCS\source\repos\Education-Courses\Education-Courses\obj\Debug\net8.0-windows\Education-Courses.sourcelink.json
+C:\Users\DCS\source\repos\Education-Courses\Education-Courses\obj\Debug\net8.0-windows\CoursesSharesDB.Forms.AdminToolsForm.resources

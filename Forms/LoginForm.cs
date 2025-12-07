@@ -1,6 +1,7 @@
 ﻿// LoginForm.cs
 using CoursesSharesDB.DAL;
 using CoursesSharesDB.Models;
+using Education_Courses.Helpers;
 using System;
 using System.Windows.Forms;
 
@@ -20,10 +21,11 @@ namespace CoursesSharesDB.Forms
             lblError.Visible = false;
 
             // For demo purposes, set default credentials
-            txtUsername.Text = "admin"; // or "malak_mohamed" if that's your admin username
-            txtPassword.Text = "admin123"; // Default password
+            txtUsername.Text = ""; // or "malak_mohamed" if that's your admin username
+            txtPassword.Text = ""; // Default password
         }
 
+        // In LoginForm.cs, replace the password check in btnLogin_Click:
         private void btnLogin_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text.Trim();
@@ -45,8 +47,10 @@ namespace CoursesSharesDB.Forms
                     return;
                 }
 
-                // For demo: Compare plain text. In production, use proper password hashing
-                if (user.Password != password)
+                // ✅ FIXED: Use PasswordHelper.VerifyPassword instead of plain text comparison
+                bool isValid = PasswordHelper.VerifyPassword(password, user.Password);
+
+                if (!isValid)
                 {
                     ShowError("Invalid username or password.");
                     return;
@@ -54,22 +58,10 @@ namespace CoursesSharesDB.Forms
 
                 // Set current user
                 CurrentUser = user;
-
-                // Store user in session manager
                 SessionManager.Login(user);
 
-                // Set DialogResult to OK to indicate successful login
                 this.DialogResult = DialogResult.OK;
-
-                // The calling code will handle opening the MainForm
-                // For example, in Program.cs:
-                // LoginForm loginForm = new LoginForm();
-                // if (loginForm.ShowDialog() == DialogResult.OK)
-                // {
-                //     Application.Run(new MainForm());
-                // }
-
-                this.Close(); // Close the login form
+                this.Close();
             }
             catch (Exception ex)
             {
@@ -209,26 +201,22 @@ namespace CoursesSharesDB.Forms
         {
             try
             {
-                // Try to get admin user from database
                 var adminUser = _repository.GetUserByUsername("admin");
-
                 if (adminUser != null)
                 {
-                    // Compare with database password (case-sensitive)
-                    return adminUser.Password == password;
+                    // ✅ Use PasswordHelper for admin password too
+                    return PasswordHelper.VerifyPassword(password, adminUser.Password);
                 }
 
-                // Fallback: Hardcoded admin passwords
-                string[] validPasswords = { "admin123", "Admin123", "Admin123!" };
-                return validPasswords.Contains(password);
+                // Fallback with hashed version of "admin123"
+                string hashedAdmin123 = PasswordHelper.HashPassword("admin123");
+                string inputHash = PasswordHelper.HashPassword(password);
+                return inputHash == hashedAdmin123;
             }
             catch (Exception ex)
             {
-                // Log error but don't show to user
                 Console.WriteLine($"Password validation error: {ex.Message}");
-
-                // Fallback to hardcoded password
-                return password == "admin123";
+                return false;
             }
         }
     }

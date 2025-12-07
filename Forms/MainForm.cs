@@ -1,7 +1,8 @@
-﻿// Forms/MainForm.cs
+﻿
 using System;
 using System.Windows.Forms;
 using CoursesSharesDB.DAL;
+using System.Drawing;
 
 namespace CoursesSharesDB.Forms
 {
@@ -13,25 +14,44 @@ namespace CoursesSharesDB.Forms
         {
             InitializeComponent();
             _repository = new Repository();
-
             UpdateUserInfo();
         }
+
+        // In MainForm.cs constructor or UpdateUserInfo method
         private void UpdateUserInfo()
         {
             lblWelcome.Text = SessionManager.GetWelcomeMessage();
 
-            // Disable/instructor-only features for students
-            if (SessionManager.IsStudent)
+            // Disable instructor-only features for students
+            bool isStudent = SessionManager.CurrentUser != null &&
+                            SessionManager.CurrentUser.Role != null &&
+                            SessionManager.CurrentUser.Role.Equals("student", StringComparison.OrdinalIgnoreCase);
+
+            if (isStudent)
             {
                 btnManageCourses.Enabled = false;
                 btnManageCourses.Text = "Manage Courses (Instructor Only)";
-                btnManageCourses.BackColor = System.Drawing.Color.Gray;
+                btnManageCourses.BackColor = Color.Gray;
             }
 
-            // Show admin-specific welcome
-            if (SessionManager.IsAdmin)
+            // Show admin-specific welcome and tools
+            bool isAdmin = SessionManager.CurrentUser != null &&
+                          SessionManager.CurrentUser.Role != null &&
+                          SessionManager.CurrentUser.Role.Equals("admin", StringComparison.OrdinalIgnoreCase);
+
+            if (isAdmin)
             {
                 lblWelcome.Text += " - Full System Access";
+                if (btnAdminTools != null)
+                {
+                    btnAdminTools.Visible = true;
+                    btnAdminTools.BringToFront();
+                }
+            }
+            else
+            {
+                if (btnAdminTools != null)
+                    btnAdminTools.Visible = false;
             }
         }
 
@@ -54,7 +74,17 @@ namespace CoursesSharesDB.Forms
 
         private void btnManageUsers_Click(object sender, EventArgs e)
         {
-            var userForm = new UserManagementForm();
+            // Get current user role
+            string userRole = "Student"; // Default
+
+            if (SessionManager.CurrentUser != null && SessionManager.CurrentUser.Role != null)
+            {
+                userRole = SessionManager.CurrentUser.Role;
+            }
+
+            // Open UserManagementForm with current user role
+            // Only Admin will see edit/delete buttons, others see read-only view
+            var userForm = new UserManagementForm(userRole);
             userForm.ShowDialog();
         }
 
@@ -89,6 +119,7 @@ namespace CoursesSharesDB.Forms
             var searchForm = new SearchForm();
             searchForm.ShowDialog();
         }
+
         private void btnExit_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to exit the application?",
@@ -97,29 +128,31 @@ namespace CoursesSharesDB.Forms
                 Application.Exit();
             }
         }
+
         private void btnLogout_Click(object sender, EventArgs e)
-{
-    if (MessageBox.Show("Are you sure you want to logout?",
-        "Confirm Logout", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-    {
-        // Logout the user
-        SessionManager.Logout();
-        
-        // Hide the current form
-        this.Hide();
-        
-        // Create and show login form
-        LoginForm loginForm = new LoginForm();
-        loginForm.Show();
-        
-        // When login form closes, close this form too
-        loginForm.FormClosed += (s, args) => this.Close();
-    }
-}
+        {
+            if (MessageBox.Show("Are you sure you want to logout?",
+                "Confirm Logout", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                // Logout the user
+                SessionManager.Logout();
+
+                // Hide the current form
+                this.Hide();
+
+                // Create and show login form
+                LoginForm loginForm = new LoginForm();
+                loginForm.Show();
+
+                // When login form closes, close this form too
+                loginForm.FormClosed += (s, args) => this.Close();
+            }
+        }
+
         private void btnAdminRegister_Click(object sender, EventArgs e)
         {
             // Only allow access if current user is admin
-            if (SessionManager.CurrentUser == null || SessionManager.CurrentUser.Role != "Admin")
+            if (SessionManager.CurrentUser == null || SessionManager.CurrentUser.Role != "admin")
             {
                 MessageBox.Show("Only administrators can access this feature.",
                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -129,7 +162,7 @@ namespace CoursesSharesDB.Forms
             // Prompt for admin password
             string adminPassword = PromptForAdminPassword();
 
-            if (adminPassword == "Admin123!") // Change this to match your validation
+            if (adminPassword == "admin123!") // Change this to match your validation
             {
                 var signUpForm = new Education_Courses.Forms.SignUpForm();
                 signUpForm.ShowDialog();
@@ -164,11 +197,12 @@ namespace CoursesSharesDB.Forms
 
             return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
+
         // In MainForm.cs, add to your navigation
         private void btnAdminTools_Click(object sender, EventArgs e)
         {
             // Check if user is admin
-            if (SessionManager.CurrentUser == null || SessionManager.CurrentUser.Role != "Admin")
+            if (SessionManager.CurrentUser == null || SessionManager.CurrentUser.Role != "admin")
             {
                 MessageBox.Show("Administrator access required!",
                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -184,9 +218,9 @@ namespace CoursesSharesDB.Forms
                 -1);
 
             // Validate password (use your secure validation method)
-            if (password == "Admin123!") // Replace with secure validation
+            if (password == "admin123") // Replace with secure validation
             {
-                var adminTools = new Education_Courses.Forms.AdminToolsForm();
+                var adminTools = new AdminToolsForm();
                 adminTools.ShowDialog();
             }
             else
@@ -196,5 +230,4 @@ namespace CoursesSharesDB.Forms
             }
         }
     }
-
 }
