@@ -47,7 +47,12 @@ namespace CoursesSharesDB.DAL
             var result = _context.Resources.DeleteOne(r => r.Id == id);
             return result.DeletedCount > 0;
         }
-
+        // IDs Generator
+        public int GetNextResourceId()
+        {
+            var resources = GetAllResources();
+            return resources.Count > 0 ? resources.Max(r => r.Id) + 1 : 1;
+        }
         // Course Operations
         public List<Course> GetAllCourses() => _context.Courses.Find(_ => true).ToList();
         public Course GetCourseByCode(string code) => _context.Courses.Find(c => c.Code == code).FirstOrDefault();
@@ -193,4 +198,5 @@ namespace CoursesSharesDB.DAL
             Console.WriteLine($"[Activity] {DateTime.Now}: {user} - {action} - {details}");
         }
     }
+    
 }
