@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using CoursesSharesDB.DAL;
 using CoursesSharesDB.Models;
 using MongoDB.Driver;
+using Education_Courses.Helpers;
 
 namespace CoursesSharesDB.Forms
 {
@@ -146,6 +147,28 @@ namespace CoursesSharesDB.Forms
                 {
                     var selectedCategory = (ResourceCategory)cmbSearchCategory.SelectedItem;
                     filter &= Builders<Resource>.Filter.Eq(r => r.CategoryId, selectedCategory.Id);
+                }
+
+                // PRIVACY FILTER: Students can't see other students' submissions
+                var currentUser = SessionManager.CurrentUser;
+                if (currentUser != null && currentUser.Role.ToLower() == "student")
+                {
+                    // Get all student usernames (excluding current user)
+                    var allStudents = _repository.GetAllUsers()
+                        .Where(u => u.Role.ToLower() == "student")
+                        .Select(u => u.Username)
+                        .ToList();
+
+                    // Remove current user from the list
+                    allStudents.Remove(currentUser.Username);
+
+                    // Filter: Show resources NOT uploaded by other students
+                    // This means: show instructor/admin resources OR current user's resources
+                    if (allStudents.Count > 0)
+                    {
+                        var otherStudentsFilter = Builders<Resource>.Filter.Nin(r => r.UploaderUsername, allStudents);
+                        filter &= otherStudentsFilter;
+                    }
                 }
 
                 // Execute search
