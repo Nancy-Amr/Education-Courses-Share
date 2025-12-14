@@ -137,15 +137,8 @@ namespace CoursesSharesDB.Forms
                 // Logout the user
                 SessionManager.Logout();
 
-                // Hide the current form
-                this.Hide();
-
-                // Create and show login form
-                LoginForm loginForm = new LoginForm();
-                loginForm.Show();
-
-                // When login form closes, close this form too
-                loginForm.FormClosed += (s, args) => this.Close();
+                // Close the main form (this will return control to Program.cs)
+                this.Close();
             }
         }
 
