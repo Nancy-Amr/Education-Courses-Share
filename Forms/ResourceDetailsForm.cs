@@ -120,6 +120,52 @@ namespace CoursesSharesDB.Forms
             }
         }
 
+        private void btnOpenResource_Click(object sender, EventArgs e)
+        {
+            if (_resource.Content == null || string.IsNullOrEmpty(_resource.Content.Url))
+            {
+                MessageBox.Show("There is no file or URL associated with this resource.", "No Content");
+                return;
+            }
+
+            try
+            {
+                string path = _resource.Content.Url;
+
+                // Check if it's a web URL
+                if (path.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || 
+                    path.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                {
+                    // It's a URL, open as is
+                }
+                else
+                {
+                    // It's a file path, assume relative to application base directory
+                    // Combine with BaseDirectory to get absolute path
+                    path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
+                    
+                    // Verify file exists
+                    if (!System.IO.File.Exists(path))
+                    {
+                         MessageBox.Show($"File not found at path: {path}\n\nPlease check if the file exists in the Uploads folder.", "File Not Found");
+                         return;
+                    }
+                }
+
+                // Open the URL or File using the system default application (Browser for links, PDF Viewer for PDFs, etc.)
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = path,
+                    UseShellExecute = true
+                };
+                System.Diagnostics.Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not open the file/url: {ex.Message}", "Error");
+            }
+        }
+
         private void btnPostComment_Click(object sender, EventArgs e)
         {
             if (_currentUser == null)

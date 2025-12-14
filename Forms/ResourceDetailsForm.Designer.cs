@@ -15,6 +15,7 @@ namespace CoursesSharesDB.Forms
         
         // Interaction controls
         private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnOpenResource;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.GroupBox grpComments;
         private System.Windows.Forms.ListBox lstComments;
@@ -40,6 +41,7 @@ namespace CoursesSharesDB.Forms
             this.lblUploader = new System.Windows.Forms.Label();
             this.lblDate = new System.Windows.Forms.Label();
             this.btnSave = new System.Windows.Forms.Button();
+            this.btnOpenResource = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.grpComments = new System.Windows.Forms.GroupBox();
             this.lstComments = new System.Windows.Forms.ListBox();
@@ -99,6 +101,16 @@ namespace CoursesSharesDB.Forms
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
 
+            // btnOpenResource
+            this.btnOpenResource.Location = new System.Drawing.Point(460, 20);
+            this.btnOpenResource.Size = new System.Drawing.Size(120, 40);
+            this.btnOpenResource.Text = "Open / Download";
+            this.btnOpenResource.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.btnOpenResource.BackColor = System.Drawing.Color.FromArgb(0, 123, 255);
+            this.btnOpenResource.ForeColor = System.Drawing.Color.White;
+            this.btnOpenResource.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnOpenResource.Click += new System.EventHandler(this.btnOpenResource_Click);
+
             // grpComments
             this.grpComments.Location = new System.Drawing.Point(27, 220);
             this.grpComments.Size = new System.Drawing.Size(673, 300);
@@ -139,6 +151,7 @@ namespace CoursesSharesDB.Forms
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.txtDescription);
             this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.btnOpenResource);
             this.Controls.Add(this.grpComments);
             this.Controls.Add(this.btnClose);
             this.Name = "ResourceDetailsForm";
