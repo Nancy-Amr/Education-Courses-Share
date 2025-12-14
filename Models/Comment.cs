@@ -4,6 +4,7 @@ using System;
 
 namespace CoursesSharesDB.Models
 {
+    [BsonIgnoreExtraElements]
     public class Comment
     {
         [BsonId]
@@ -16,6 +17,7 @@ namespace CoursesSharesDB.Models
         [BsonElement("user_id")]
         public int UserId { get; set; }
 
+        [BsonElement("text")]
         public string Text { get; set; }
 
         [BsonElement("time_stamp")]
