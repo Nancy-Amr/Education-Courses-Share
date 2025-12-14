@@ -150,7 +150,7 @@
             btnManageUsers.Name = "btnManageUsers";
             btnManageUsers.Size = new Size(300, 42);
             btnManageUsers.TabIndex = 0;
-            btnManageUsers.Text = "&Manage Users";
+            btnManageUsers.Text = "&View Users";
             btnManageUsers.UseVisualStyleBackColor = false;
             btnManageUsers.Click += btnManageUsers_Click;
             // 
@@ -206,7 +206,7 @@
             btnSearch.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnSearch.ForeColor = Color.White;
             btnSearch.Location = new Point(25, 243);
-            btnSearch.Margin = new Padding (3, 4, 3, 4);
+            btnSearch.Margin = new Padding(3, 4, 3, 4);
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new Size(300, 42);
             btnSearch.TabIndex = 4;
@@ -297,7 +297,6 @@
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
-
         }
 
         #endregion

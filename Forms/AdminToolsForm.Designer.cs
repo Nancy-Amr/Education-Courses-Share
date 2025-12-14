@@ -56,13 +56,11 @@
         // Control Buttons
         private Button btnRefresh;
         private Button btnRunBackup;
-        private Button btnSystemSettings;
         private Button btnUserManagement;
         private Button btnDatabaseTools;
         private Button btnExportData;
         private Button btnEmergencyLockdown;
         private Button btnClose;
-        private Button btnAddUser;
 
         // Help Link
         private LinkLabel linkLabelHelp;
@@ -119,13 +117,11 @@
             lblAdminsPercent = new Label();
             btnRefresh = new Button();
             btnRunBackup = new Button();
-            btnSystemSettings = new Button();
             btnUserManagement = new Button();
             btnDatabaseTools = new Button();
             btnExportData = new Button();
             btnEmergencyLockdown = new Button();
             btnClose = new Button();
-            btnAddUser = new Button();
             linkLabelHelp = new LinkLabel();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             grpStatistics.SuspendLayout();
@@ -207,7 +203,7 @@
             lblStatEnrollments.AutoSize = true;
             lblStatEnrollments.Location = new Point(20, 80);
             lblStatEnrollments.Name = "lblStatEnrollments";
-            lblStatEnrollments.Size = new Size(108, 18);
+            lblStatEnrollments.Size = new Size(103, 18);
             lblStatEnrollments.TabIndex = 2;
             lblStatEnrollments.Text = "Enrollments:";
             // 
@@ -227,7 +223,7 @@
             lblStatActiveUsers.AutoSize = true;
             lblStatActiveUsers.Location = new Point(20, 120);
             lblStatActiveUsers.Name = "lblStatActiveUsers";
-            lblStatActiveUsers.Size = new Size(107, 18);
+            lblStatActiveUsers.Size = new Size(108, 18);
             lblStatActiveUsers.TabIndex = 4;
             lblStatActiveUsers.Text = "Active Users:";
             // 
@@ -272,7 +268,7 @@
             lblDbStatusLabel.AutoSize = true;
             lblDbStatusLabel.Location = new Point(20, 30);
             lblDbStatusLabel.Name = "lblDbStatusLabel";
-            lblDbStatusLabel.Size = new Size(86, 18);
+            lblDbStatusLabel.Size = new Size(84, 18);
             lblDbStatusLabel.TabIndex = 0;
             lblDbStatusLabel.Text = "Database:";
             // 
@@ -282,7 +278,7 @@
             lblDbStatus.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblDbStatus.Location = new Point(140, 30);
             lblDbStatus.Name = "lblDbStatus";
-            lblDbStatus.Size = new Size(95, 18);
+            lblDbStatus.Size = new Size(93, 18);
             lblDbStatus.TabIndex = 1;
             lblDbStatus.Text = "Checking...";
             // 
@@ -291,7 +287,7 @@
             lblFsStatusLabel.AutoSize = true;
             lblFsStatusLabel.Location = new Point(20, 60);
             lblFsStatusLabel.Name = "lblFsStatusLabel";
-            lblFsStatusLabel.Size = new Size(95, 18);
+            lblFsStatusLabel.Size = new Size(101, 18);
             lblFsStatusLabel.TabIndex = 2;
             lblFsStatusLabel.Text = "File System:";
             // 
@@ -301,7 +297,7 @@
             lblFsStatus.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblFsStatus.Location = new Point(140, 60);
             lblFsStatus.Name = "lblFsStatus";
-            lblFsStatus.Size = new Size(95, 18);
+            lblFsStatus.Size = new Size(93, 18);
             lblFsStatus.TabIndex = 3;
             lblFsStatus.Text = "Checking...";
             // 
@@ -310,7 +306,7 @@
             lblBackupStatusLabel.AutoSize = true;
             lblBackupStatusLabel.Location = new Point(20, 90);
             lblBackupStatusLabel.Name = "lblBackupStatusLabel";
-            lblBackupStatusLabel.Size = new Size(115, 18);
+            lblBackupStatusLabel.Size = new Size(122, 18);
             lblBackupStatusLabel.TabIndex = 4;
             lblBackupStatusLabel.Text = "Backup Status:";
             // 
@@ -329,7 +325,7 @@
             lblLastBackupLabel.AutoSize = true;
             lblLastBackupLabel.Location = new Point(20, 115);
             lblLastBackupLabel.Name = "lblLastBackupLabel";
-            lblLastBackupLabel.Size = new Size(103, 18);
+            lblLastBackupLabel.Size = new Size(106, 18);
             lblLastBackupLabel.TabIndex = 6;
             lblLastBackupLabel.Text = "Last Backup:";
             // 
@@ -339,7 +335,7 @@
             lblLastBackup.Font = new Font("Microsoft Sans Serif", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblLastBackup.Location = new Point(140, 115);
             lblLastBackup.Name = "lblLastBackup";
-            lblLastBackup.Size = new Size(66, 17);
+            lblLastBackup.Size = new Size(31, 17);
             lblLastBackup.TabIndex = 7;
             lblLastBackup.Text = "N/A";
             // 
@@ -348,7 +344,7 @@
             lblCpuLabel.AutoSize = true;
             lblCpuLabel.Location = new Point(20, 140);
             lblCpuLabel.Name = "lblCpuLabel";
-            lblCpuLabel.Size = new Size(44, 18);
+            lblCpuLabel.Size = new Size(48, 18);
             lblCpuLabel.TabIndex = 8;
             lblCpuLabel.Text = "CPU:";
             // 
@@ -358,7 +354,7 @@
             lblCpuUsage.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblCpuUsage.Location = new Point(90, 140);
             lblCpuUsage.Name = "lblCpuUsage";
-            lblCpuUsage.Size = new Size(33, 18);
+            lblCpuUsage.Size = new Size(31, 18);
             lblCpuUsage.TabIndex = 9;
             lblCpuUsage.Text = "0%";
             // 
@@ -367,7 +363,7 @@
             lblMemoryLabel.AutoSize = true;
             lblMemoryLabel.Location = new Point(140, 140);
             lblMemoryLabel.Name = "lblMemoryLabel";
-            lblMemoryLabel.Size = new Size(47, 18);
+            lblMemoryLabel.Size = new Size(50, 18);
             lblMemoryLabel.TabIndex = 10;
             lblMemoryLabel.Text = "Mem:";
             // 
@@ -377,7 +373,7 @@
             lblMemoryUsage.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblMemoryUsage.Location = new Point(195, 140);
             lblMemoryUsage.Name = "lblMemoryUsage";
-            lblMemoryUsage.Size = new Size(33, 18);
+            lblMemoryUsage.Size = new Size(31, 18);
             lblMemoryUsage.TabIndex = 11;
             lblMemoryUsage.Text = "0%";
             // 
@@ -386,7 +382,7 @@
             lblDiskLabel.AutoSize = true;
             lblDiskLabel.Location = new Point(20, 165);
             lblDiskLabel.Name = "lblDiskLabel";
-            lblDiskLabel.Size = new Size(45, 18);
+            lblDiskLabel.Size = new Size(47, 18);
             lblDiskLabel.TabIndex = 12;
             lblDiskLabel.Text = "Disk:";
             // 
@@ -396,7 +392,7 @@
             lblDiskUsage.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblDiskUsage.Location = new Point(90, 165);
             lblDiskUsage.Name = "lblDiskUsage";
-            lblDiskUsage.Size = new Size(33, 18);
+            lblDiskUsage.Size = new Size(31, 18);
             lblDiskUsage.TabIndex = 13;
             lblDiskUsage.Text = "0%";
             // 
@@ -406,7 +402,7 @@
             progressBarBackup.Name = "progressBarBackup";
             progressBarBackup.Size = new Size(260, 15);
             progressBarBackup.TabIndex = 14;
-           progressBarBackup.Visible = false;
+            progressBarBackup.Visible = false;
             // 
             // grpActivityLog
             // 
@@ -470,7 +466,7 @@
             lblStudentsLabel.AutoSize = true;
             lblStudentsLabel.Location = new Point(20, 40);
             lblStudentsLabel.Name = "lblStudentsLabel";
-            lblStudentsLabel.Size = new Size(75, 18);
+            lblStudentsLabel.Size = new Size(79, 18);
             lblStudentsLabel.TabIndex = 0;
             lblStudentsLabel.Text = "Students:";
             // 
@@ -491,7 +487,7 @@
             lblStudentsPercent.Font = new Font("Microsoft Sans Serif", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblStudentsPercent.Location = new Point(190, 42);
             lblStudentsPercent.Name = "lblStudentsPercent";
-            lblStudentsPercent.Size = new Size(35, 17);
+            lblStudentsPercent.Size = new Size(38, 17);
             lblStudentsPercent.TabIndex = 2;
             lblStudentsPercent.Text = "(0%)";
             // 
@@ -500,7 +496,7 @@
             lblInstructorsLabel.AutoSize = true;
             lblInstructorsLabel.Location = new Point(20, 80);
             lblInstructorsLabel.Name = "lblInstructorsLabel";
-            lblInstructorsLabel.Size = new Size(91, 18);
+            lblInstructorsLabel.Size = new Size(94, 18);
             lblInstructorsLabel.TabIndex = 3;
             lblInstructorsLabel.Text = "Instructors:";
             // 
@@ -521,7 +517,7 @@
             lblInstructorsPercent.Font = new Font("Microsoft Sans Serif", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblInstructorsPercent.Location = new Point(190, 82);
             lblInstructorsPercent.Name = "lblInstructorsPercent";
-            lblInstructorsPercent.Size = new Size(35, 17);
+            lblInstructorsPercent.Size = new Size(38, 17);
             lblInstructorsPercent.TabIndex = 5;
             lblInstructorsPercent.Text = "(0%)";
             // 
@@ -530,7 +526,7 @@
             lblAdminsLabel.AutoSize = true;
             lblAdminsLabel.Location = new Point(20, 120);
             lblAdminsLabel.Name = "lblAdminsLabel";
-            lblAdminsLabel.Size = new Size(66, 18);
+            lblAdminsLabel.Size = new Size(68, 18);
             lblAdminsLabel.TabIndex = 6;
             lblAdminsLabel.Text = "Admins:";
             // 
@@ -551,7 +547,7 @@
             lblAdminsPercent.Font = new Font("Microsoft Sans Serif", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblAdminsPercent.Location = new Point(190, 122);
             lblAdminsPercent.Name = "lblAdminsPercent";
-            lblAdminsPercent.Size = new Size(35, 17);
+            lblAdminsPercent.Size = new Size(38, 17);
             lblAdminsPercent.TabIndex = 8;
             lblAdminsPercent.Text = "(0%)";
             // 
@@ -575,7 +571,7 @@
             btnRunBackup.FlatStyle = FlatStyle.Flat;
             btnRunBackup.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnRunBackup.ForeColor = Color.White;
-            btnRunBackup.Location = new Point(150, 600);
+            btnRunBackup.Location = new Point(146, 600);
             btnRunBackup.Name = "btnRunBackup";
             btnRunBackup.Size = new Size(130, 40);
             btnRunBackup.TabIndex = 8;
@@ -583,27 +579,13 @@
             btnRunBackup.UseVisualStyleBackColor = false;
             btnRunBackup.Click += btnRunBackup_Click;
             // 
-            // btnSystemSettings
-            // 
-            btnSystemSettings.BackColor = Color.FromArgb(108, 117, 125);
-            btnSystemSettings.FlatStyle = FlatStyle.Flat;
-            btnSystemSettings.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnSystemSettings.ForeColor = Color.White;
-            btnSystemSettings.Location = new Point(290, 600);
-            btnSystemSettings.Name = "btnSystemSettings";
-            btnSystemSettings.Size = new Size(160, 40);
-            btnSystemSettings.TabIndex = 9;
-            btnSystemSettings.Text = "&System Settings";
-            btnSystemSettings.UseVisualStyleBackColor = false;
-            btnSystemSettings.Click += btnSystemSettings_Click;
-            // 
             // btnUserManagement
             // 
             btnUserManagement.BackColor = Color.FromArgb(255, 193, 7);
             btnUserManagement.FlatStyle = FlatStyle.Flat;
             btnUserManagement.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnUserManagement.ForeColor = Color.White;
-            btnUserManagement.Location = new Point(460, 600);
+            btnUserManagement.Location = new Point(418, 600);
             btnUserManagement.Name = "btnUserManagement";
             btnUserManagement.Size = new Size(180, 40);
             btnUserManagement.TabIndex = 10;
@@ -617,7 +599,7 @@
             btnDatabaseTools.FlatStyle = FlatStyle.Flat;
             btnDatabaseTools.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnDatabaseTools.ForeColor = Color.White;
-            btnDatabaseTools.Location = new Point(650, 600);
+            btnDatabaseTools.Location = new Point(604, 600);
             btnDatabaseTools.Name = "btnDatabaseTools";
             btnDatabaseTools.Size = new Size(140, 40);
             btnDatabaseTools.TabIndex = 11;
@@ -631,7 +613,7 @@
             btnExportData.FlatStyle = FlatStyle.Flat;
             btnExportData.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnExportData.ForeColor = Color.White;
-            btnExportData.Location = new Point(800, 600);
+            btnExportData.Location = new Point(282, 600);
             btnExportData.Name = "btnExportData";
             btnExportData.Size = new Size(130, 40);
             btnExportData.TabIndex = 12;
@@ -667,20 +649,6 @@
             btnClose.UseVisualStyleBackColor = false;
             btnClose.Click += btnClose_Click;
             // 
-            // btnAddUser
-            // 
-            btnAddUser.BackColor = Color.FromArgb(40, 167, 69);
-            btnAddUser.FlatStyle = FlatStyle.Flat;
-            btnAddUser.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnAddUser.ForeColor = Color.White;
-            btnAddUser.Location = new Point(150, 650);
-            btnAddUser.Name = "btnAddUser";
-            btnAddUser.Size = new Size(130, 35);
-            btnAddUser.TabIndex = 15;
-            btnAddUser.Text = "&Add New User";
-            btnAddUser.UseVisualStyleBackColor = false;
-            btnAddUser.Click += btnAddUser_Click;
-            // 
             // linkLabelHelp
             // 
             linkLabelHelp.AutoSize = true;
@@ -699,13 +667,11 @@
             BackColor = Color.White;
             ClientSize = new Size(1000, 710);
             Controls.Add(linkLabelHelp);
-            Controls.Add(btnAddUser);
             Controls.Add(btnClose);
             Controls.Add(btnEmergencyLockdown);
             Controls.Add(btnExportData);
             Controls.Add(btnDatabaseTools);
             Controls.Add(btnUserManagement);
-            Controls.Add(btnSystemSettings);
             Controls.Add(btnRunBackup);
             Controls.Add(btnRefresh);
             Controls.Add(grpUserDistribution);
