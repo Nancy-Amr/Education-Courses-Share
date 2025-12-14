@@ -72,9 +72,21 @@ namespace CoursesSharesDB.DAL
         public List<SavedResource> GetSavedResourcesByUser(int userId) =>
             _context.SavedResources.Find(sr => sr.UserId == userId).ToList();
 
+        public void InsertSavedResource(SavedResource savedResource) => 
+            _context.SavedResources.InsertOne(savedResource);
+
+        public bool IsResourceSaved(int userId, int resourceId) =>
+            _context.SavedResources.Find(sr => sr.UserId == userId && sr.ResourceId == resourceId).Any();
+
+        public void DeleteSavedResource(int userId, int resourceId) =>
+            _context.SavedResources.DeleteOne(sr => sr.UserId == userId && sr.ResourceId == resourceId);
+
         // Comment Operations
         public List<Comment> GetCommentsByResource(int resourceId) =>
-            _context.Comments.Find(c => c.ResourceId == resourceId).ToList();
+            _context.Comments.Find(c => c.ResourceId == resourceId).SortByDescending(c => c.TimeStamp).ToList();
+
+        public void InsertComment(Comment comment) => 
+            _context.Comments.InsertOne(comment);
 
         // Department Operations
         public List<Department> GetAllDepartments() => _context.Departments.Find(_ => true).ToList();

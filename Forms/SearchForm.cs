@@ -105,6 +105,7 @@ namespace CoursesSharesDB.Forms
             // Add button column for viewing details
             var detailsColumn = new DataGridViewButtonColumn
             {
+                Name = "Actions", // Fix: Set the Name so we can find it later
                 HeaderText = "Actions",
                 Text = "View Details",
                 UseColumnTextForButtonValue = true,
@@ -204,46 +205,8 @@ namespace CoursesSharesDB.Forms
         {
             try
             {
-                // Get category name
-                var category = _categories.FirstOrDefault(c => c.Id == resource.CategoryId);
-                var categoryName = category?.Name ?? "Unknown";
-
-                // Get course name
-                var courses = _repository.GetAllCourses();
-                var course = courses.FirstOrDefault(c => c.Code == resource.CourseCode);
-                var courseName = course?.Name ?? "Unknown";
-
-                // Build details message
-                var details = new System.Text.StringBuilder();
-                details.AppendLine($"Resource Details:");
-                details.AppendLine($"=================");
-                details.AppendLine($"ID: {resource.Id}");
-                details.AppendLine($"Name: {resource.Name}");
-                details.AppendLine($"Description: {resource.Description}");
-                details.AppendLine($"Course: {courseName} ({resource.CourseCode})");
-                details.AppendLine($"Category: {categoryName}");
-                details.AppendLine($"Uploader: {resource.UploaderUsername}");
-                details.AppendLine($"Upload Date: {resource.UploadDate:yyyy-MM-dd HH:mm}");
-
-                if (resource.Content != null)
-                {
-                    details.AppendLine($"Content Type: {resource.Content.Type}");
-                    details.AppendLine($"File Type: {resource.Content.FileType}");
-                    details.AppendLine($"URL: {resource.Content.Url}");
-                }
-
-                if (resource.Topics != null && resource.Topics.Count > 0)
-                {
-                    details.AppendLine($"Topics: {string.Join(", ", resource.Topics)}");
-                }
-
-                if (resource.Reactions != null && resource.Reactions.Count > 0)
-                {
-                    details.AppendLine($"Reactions: {resource.Reactions.Count} user(s)");
-                }
-
-                MessageBox.Show(details.ToString(), "Resource Details",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                var detailsForm = new ResourceDetailsForm(resource);
+                detailsForm.ShowDialog();
             }
             catch (Exception ex)
             {

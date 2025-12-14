@@ -158,6 +158,7 @@ namespace CoursesSharesDB.Forms
             btnClose.Text = "Close";
             btnClose.UseVisualStyleBackColor = false;
             btnClose.Click += btnClose_Click;
+            btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             // 
             // btnReset
             // 
