@@ -24,7 +24,6 @@ db.resources.createIndex({ uploader_username: 1 });
 db.resources.createIndex({ name: "text", description: "text" });
 db.saved_resources.createIndex({ user_id: 1, resource_id: 1 });
 db.comments.createIndex({ resource_id: 1 });
-db.comments.createIndex({ user_id: 1 });
 
 // Departments
 db.departments.insertMany([
@@ -155,8 +154,8 @@ db.users.insertMany([
         _id: 100, // Use a high ID number to avoid conflicts
         username: "admin",
         email: "admin@courseshares.edu",
-        password: "admin123", // You should hash this in production
-        role: "admin", // New role
+        password: "admin123", 
+        role: "admin", 
         profilePicture: null,
         createdAt: new Date("2025-01-01")
     },
@@ -1110,7 +1109,7 @@ db.comments.insertMany([
 
 // -------------------- (C) CREATE --------------------
 
-// 1) Insert a new resource (extra CSE382 recap slide)
+// 1) Insert a new resource (extra CSE382  slide)
 db.resources.insertOne({
     _id: 38208,
     name: "CSE382 - Lecture 11 (DBScan Algorithm)",
