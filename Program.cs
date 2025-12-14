@@ -12,6 +12,9 @@ namespace CoursesSharesDB
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            // Run database migration (hash passwords, update validation)
+            Services.DatabaseMigration.RunMigration();
+
             // Show login form first
             using (var loginForm = new LoginForm())
             {

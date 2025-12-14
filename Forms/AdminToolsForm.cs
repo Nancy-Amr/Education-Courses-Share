@@ -211,9 +211,9 @@ namespace CoursesSharesDB.Forms
             try
             {
                 var users = _repository.GetAllUsers();
-                int students = users.FindAll(u => u.Role == "Student").Count;
-                int instructors = users.FindAll(u => u.Role == "Instructor").Count;
-                int admins = users.FindAll(u => u.Role == "Admin").Count;
+                int students = users.FindAll(u => u.Role.Equals("student", StringComparison.OrdinalIgnoreCase)).Count;
+                int instructors = users.FindAll(u => u.Role.Equals("instructor", StringComparison.OrdinalIgnoreCase)).Count;
+                int admins = users.FindAll(u => u.Role.Equals("admin", StringComparison.OrdinalIgnoreCase)).Count;
 
                 lblStudentsCount.Text = students.ToString();
                 lblInstructorsCount.Text = instructors.ToString();

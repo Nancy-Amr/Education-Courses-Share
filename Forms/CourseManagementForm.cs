@@ -28,6 +28,7 @@ namespace CoursesSharesDB.Forms
             // Event Wiring
             this.dataGridViewCourses.SelectionChanged += new EventHandler(this.dataGridViewCourses_SelectionChanged);
             this.dataGridViewCourses.CellClick += new DataGridViewCellEventHandler(this.dataGridViewCourses_CellClick);
+            this.dataGridViewCourses.ColumnHeaderMouseClick += new DataGridViewCellMouseEventHandler(this.dataGridViewCourses_ColumnHeaderMouseClick);
             this.Load += (s, e) => ApplyAnchoring(); // Apply resizing logic on load
 
             CheckPermissions();
@@ -70,6 +71,7 @@ namespace CoursesSharesDB.Forms
         {
             if (SessionManager.IsStudent)
             {
+                // Students: no editing allowed
                 btnAdd.Enabled = false;
                 btnUpdate.Enabled = false;
                 btnDelete.Enabled = false;
@@ -81,6 +83,16 @@ namespace CoursesSharesDB.Forms
                 btnDelete.BackColor = Color.LightGray;
                 btnManageTopics.BackColor = Color.LightGray;
             }
+            else if (SessionManager.IsInstructor)
+            {
+                // Instructors: can only add courses they will instruct
+                // Update/Delete will be validated per-course in the button click handlers
+                btnAdd.Enabled = true;
+                btnUpdate.Enabled = true;
+                btnDelete.Enabled = true;
+                btnManageTopics.Enabled = true;
+            }
+            // Admin has full access (all buttons enabled by default)
         }
 
         private void LoadFormData()
@@ -161,11 +173,40 @@ namespace CoursesSharesDB.Forms
             try
             {
                 var originalCourse = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
+                
+                // Check if instructor is authorized to update this course
+                if (SessionManager.IsInstructor && SessionManager.CurrentUser != null)
+                {
+                    string instructorUsername = SessionManager.CurrentUser.Username;
+                    bool isAuthorized = originalCourse.InstructorNames.Any(name =>
+                    {
+                        // Remove "Dr.", "Prof.", "Eng.", etc. and compare
+                        string cleanedName = name.Replace("Dr. ", "").Replace("Prof. ", "").Replace("Eng. ", "")
+                                                 .Replace("  ", " ").Trim();
+                        // Convert to username format (lowercase, spaces to underscores)
+                        string nameAsUsername = cleanedName.ToLower().Replace(" ", "_");
+                        return nameAsUsername.Equals(instructorUsername, StringComparison.OrdinalIgnoreCase);
+                    });
+                    
+                    if (!isAuthorized)
+                    {
+                        MessageBox.Show("You can only update courses where you are listed as an instructor.", 
+                            "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+                
                 var updatedCourse = CreateCourseFromInput();
                 
                 // Keep the original code and ID
                 updatedCourse.Id = originalCourse.Id;
-                updatedCourse.Code = originalCourse.Code; 
+                updatedCourse.Code = originalCourse.Code;
+                
+                // IMPORTANT: Preserve the original instructor names as they are stored in DB format (e.g., "Dr. Nivin Atef")
+                // The form uses usernames in the CheckedListBox, but DB needs display names
+                // UPDATED: Use the instructor names from the input (updatedCourse) instead of the original ones
+                // updatedCourse.InstructorNames = originalCourse.InstructorNames;
+                
                 // Preserve topics as they aren't edited here
                 updatedCourse.Topics = originalCourse.Topics;
 
@@ -195,7 +236,10 @@ namespace CoursesSharesDB.Forms
             var selectedInstructors = new List<string>();
             foreach (string item in lstInstructors.CheckedItems)
             {
-                selectedInstructors.Add(item);
+                // Convert username to display name format
+                // item is like "nivin_atef", need to convert to "Dr. Nivin Atef"
+                string displayName = ConvertUsernameToDisplayName(item);
+                selectedInstructors.Add(displayName);
             }
 
             return new Course
@@ -207,6 +251,19 @@ namespace CoursesSharesDB.Forms
                 InstructorNames = selectedInstructors,
                 Topics = new List<Course.Topic>()
             };
+        }
+
+        private string ConvertUsernameToDisplayName(string username)
+        {
+            // Convert username format (nivin_atef) to display name format (Dr. Nivin Atef)
+            // Split by underscore, capitalize each part, join with space
+            var parts = username.Split('_');
+            var capitalizedParts = parts.Select(p => char.ToUpper(p[0]) + p.Substring(1));
+            var fullName = string.Join(" ", capitalizedParts);
+            
+            // Add title prefix based on role
+            // For instructors, use "Dr." prefix (you can customize this based on your needs)
+            return $"Dr. {fullName}";
         }
 
         private bool ValidateInputs()
@@ -229,6 +286,29 @@ namespace CoursesSharesDB.Forms
             if (dataGridViewCourses.CurrentRow == null) return;
 
             var course = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
+            
+            // Check if instructor is authorized to delete this course
+            if (SessionManager.IsInstructor && SessionManager.CurrentUser != null)
+            {
+                string instructorUsername = SessionManager.CurrentUser.Username;
+                bool isAuthorized = course.InstructorNames.Any(name =>
+                {
+                    // Remove "Dr.", "Prof.", "Eng.", etc. and compare
+                    string cleanedName = name.Replace("Dr. ", "").Replace("Prof. ", "").Replace("Eng. ", "")
+                                             .Replace("  ", " ").Trim();
+                    // Convert to username format (lowercase, spaces to underscores)
+                    string nameAsUsername = cleanedName.ToLower().Replace(" ", "_");
+                    return nameAsUsername.Equals(instructorUsername, StringComparison.OrdinalIgnoreCase);
+                });
+                
+                if (!isAuthorized)
+                {
+                    MessageBox.Show("You can only delete courses where you are listed as an instructor.", 
+                        "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+            
             if (MessageBox.Show($"Delete course '{course.Name}'?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
                 _repository.DeleteCourse(course.Code);
@@ -240,6 +320,26 @@ namespace CoursesSharesDB.Forms
         private void btnSearch_Click(object sender, EventArgs e)
         {
             var courses = _repository.GetAllCourses();
+            
+            // Filter by instructor if current user is an instructor
+            if (SessionManager.IsInstructor && SessionManager.CurrentUser != null)
+            {
+                string instructorUsername = SessionManager.CurrentUser.Username;
+                
+                // Match username against instructor display names
+                // Database stores instructor display names like "Dr. Nivin Atef"
+                // We need to match against username "nivin_atef"
+                courses = courses.Where(c => c.InstructorNames != null && 
+                    c.InstructorNames.Any(name => 
+                    {
+                        // Remove "Dr.", "Prof.", "Eng.", etc. and compare
+                        string cleanedName = name.Replace("Dr. ", "").Replace("Prof. ", "").Replace("Eng. ", "")
+                                                 .Replace("  ", " ").Trim();
+                        // Convert to username format (lowercase, spaces to underscores)
+                        string nameAsUsername = cleanedName.ToLower().Replace(" ", "_");
+                        return nameAsUsername.Equals(instructorUsername, StringComparison.OrdinalIgnoreCase);
+                    })).ToList();
+            }
             
             if (!string.IsNullOrWhiteSpace(txtSearchCode.Text))
                 courses = courses.Where(c => c.Code.IndexOf(txtSearchCode.Text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
@@ -319,7 +419,12 @@ namespace CoursesSharesDB.Forms
             for (int i = 0; i < lstInstructors.Items.Count; i++)
             {
                 string name = lstInstructors.Items[i].ToString();
-                lstInstructors.SetItemChecked(i, course.InstructorNames.Contains(name));
+                string username = lstInstructors.Items[i].ToString();
+                string displayName = ConvertUsernameToDisplayName(username);
+                // Check if the display name exists in the course's instructor list
+                // We use Contains with case-insensitivity just to be safe, though exact match should work if data is clean
+                bool isAssigned = course.InstructorNames.Any(n => n.Equals(displayName, StringComparison.OrdinalIgnoreCase));
+                lstInstructors.SetItemChecked(i, isAssigned);
             }
         }
 
@@ -328,6 +433,29 @@ namespace CoursesSharesDB.Forms
             if (dataGridViewCourses.CurrentRow == null) return;
             
             var course = (Course)dataGridViewCourses.CurrentRow.DataBoundItem;
+            
+            // Check if instructor is authorized to manage topics for this course
+            if (SessionManager.IsInstructor && SessionManager.CurrentUser != null)
+            {
+                string instructorUsername = SessionManager.CurrentUser.Username;
+                bool isAuthorized = course.InstructorNames.Any(name =>
+                {
+                    // Remove "Dr.", "Prof.", "Eng.", etc. and compare
+                    string cleanedName = name.Replace("Dr. ", "").Replace("Prof. ", "").Replace("Eng. ", "")
+                                             .Replace("  ", " ").Trim();
+                    // Convert to username format (lowercase, spaces to underscores)
+                    string nameAsUsername = cleanedName.ToLower().Replace(" ", "_");
+                    return nameAsUsername.Equals(instructorUsername, StringComparison.OrdinalIgnoreCase);
+                });
+                
+                if (!isAuthorized)
+                {
+                    MessageBox.Show("You can only manage topics for courses where you are listed as an instructor.", 
+                        "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+            
             using (var form = new CourseTopicsForm(course))
             {
                 form.ShowDialog();
@@ -340,5 +468,63 @@ namespace CoursesSharesDB.Forms
         }
 
         private void btnClose_Click(object sender, EventArgs e) => Close();
+
+        private System.ComponentModel.ListSortDirection _lastSortDirection = System.ComponentModel.ListSortDirection.Ascending;
+        private string _lastSortColumn = "";
+
+        private void dataGridViewCourses_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.ColumnIndex >= 0 && dataGridViewCourses.Columns[e.ColumnIndex].DataPropertyName != null)
+            {
+                string columnName = dataGridViewCourses.Columns[e.ColumnIndex].DataPropertyName;
+                
+                // Determine sort direction
+                System.ComponentModel.ListSortDirection direction;
+                if (_lastSortColumn == columnName)
+                {
+                    direction = _lastSortDirection == System.ComponentModel.ListSortDirection.Ascending 
+                        ? System.ComponentModel.ListSortDirection.Descending 
+                        : System.ComponentModel.ListSortDirection.Ascending;
+                }
+                else
+                {
+                    direction = System.ComponentModel.ListSortDirection.Ascending;
+                }
+
+                // Get current list
+                var courses = (List<Course>)_bindingSource.DataSource;
+                
+                // Sort the list
+                if (direction == System.ComponentModel.ListSortDirection.Ascending)
+                {
+                    courses = courses.OrderBy(c => c.GetType().GetProperty(columnName)?.GetValue(c)).ToList();
+                }
+                else
+                {
+                    courses = courses.OrderByDescending(c => c.GetType().GetProperty(columnName)?.GetValue(c)).ToList();
+                }
+
+                // Update binding source
+                _bindingSource.DataSource = courses;
+                _bindingSource.ResetBindings(false);
+
+                // Set sort glyph
+                dataGridViewCourses.Columns[e.ColumnIndex].HeaderCell.SortGlyphDirection = 
+                    direction == System.ComponentModel.ListSortDirection.Ascending ? SortOrder.Ascending : SortOrder.Descending;
+
+                // Clear other column glyphs
+                for (int i = 0; i < dataGridViewCourses.Columns.Count; i++)
+                {
+                    if (i != e.ColumnIndex)
+                    {
+                        dataGridViewCourses.Columns[i].HeaderCell.SortGlyphDirection = SortOrder.None;
+                    }
+                }
+
+                // Remember last sort
+                _lastSortColumn = columnName;
+                _lastSortDirection = direction;
+            }
+        }
     }
 }

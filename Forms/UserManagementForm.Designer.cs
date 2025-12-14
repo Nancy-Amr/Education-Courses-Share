@@ -57,6 +57,7 @@ namespace CoursesSharesDB.Forms
             dataGridViewUsers.TabIndex = 0;
             dataGridViewUsers.SelectionChanged += dataGridViewUsers_SelectionChanged;
             dataGridViewUsers.CellContentClick += dataGridViewUsers_CellContentClick;
+            dataGridViewUsers.ColumnHeaderMouseClick += dataGridViewUsers_ColumnHeaderMouseClick;
             // 
             // txtId
             // 

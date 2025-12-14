@@ -60,7 +60,7 @@
             lblTitle.AutoSize = true;
             lblTitle.Font = new Font("Microsoft Sans Serif", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblTitle.ForeColor = Color.FromArgb(0, 70, 120);
-            lblTitle.Location = new Point(150, 38);
+            lblTitle.Location = new Point(150, 15);
             lblTitle.Name = "lblTitle";
             lblTitle.Size = new Size(573, 46);
             lblTitle.TabIndex = 0;
@@ -71,7 +71,7 @@
             // 
             lblWelcome.AutoSize = true;
             lblWelcome.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblWelcome.Location = new Point(150, 112);
+            lblWelcome.Location = new Point(150, 55);
             lblWelcome.Name = "lblWelcome";
             lblWelcome.Size = new Size(350, 25);
             lblWelcome.TabIndex = 1;
@@ -113,11 +113,11 @@
             grpStatistics.Controls.Add(lblTotalCourses);
             grpStatistics.Controls.Add(lblTotalResources);
             grpStatistics.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            grpStatistics.Location = new Point(150, 175);
+            grpStatistics.Location = new Point(150, 90);
             grpStatistics.Margin = new Padding(3, 4, 3, 4);
             grpStatistics.Name = "grpStatistics";
             grpStatistics.Padding = new Padding(3, 4, 3, 4);
-            grpStatistics.Size = new Size(350, 200);
+            grpStatistics.Size = new Size(350, 180);
             grpStatistics.TabIndex = 5;
             grpStatistics.TabStop = false;
             grpStatistics.Text = "System Statistics";
@@ -130,11 +130,11 @@
             grpNavigation.Controls.Add(btnViewReports);
             grpNavigation.Controls.Add(btnSearch);
             grpNavigation.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            grpNavigation.Location = new Point(150, 400);
+            grpNavigation.Location = new Point(150, 280);
             grpNavigation.Margin = new Padding(3, 4, 3, 4);
             grpNavigation.Name = "grpNavigation";
             grpNavigation.Padding = new Padding(3, 4, 3, 4);
-            grpNavigation.Size = new Size(350, 400);
+            grpNavigation.Size = new Size(350, 295);
             grpNavigation.TabIndex = 6;
             grpNavigation.TabStop = false;
             grpNavigation.Text = "Navigation";
@@ -145,10 +145,10 @@
             btnManageUsers.FlatStyle = FlatStyle.Flat;
             btnManageUsers.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnManageUsers.ForeColor = Color.White;
-            btnManageUsers.Location = new Point(25, 50);
+            btnManageUsers.Location = new Point(25, 35);
             btnManageUsers.Margin = new Padding(3, 4, 3, 4);
             btnManageUsers.Name = "btnManageUsers";
-            btnManageUsers.Size = new Size(300, 56);
+            btnManageUsers.Size = new Size(300, 42);
             btnManageUsers.TabIndex = 0;
             btnManageUsers.Text = "&Manage Users";
             btnManageUsers.UseVisualStyleBackColor = false;
@@ -160,10 +160,10 @@
             btnManageResources.FlatStyle = FlatStyle.Flat;
             btnManageResources.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnManageResources.ForeColor = Color.White;
-            btnManageResources.Location = new Point(25, 119);
+            btnManageResources.Location = new Point(25, 87);
             btnManageResources.Margin = new Padding(3, 4, 3, 4);
             btnManageResources.Name = "btnManageResources";
-            btnManageResources.Size = new Size(300, 56);
+            btnManageResources.Size = new Size(300, 42);
             btnManageResources.TabIndex = 1;
             btnManageResources.Text = "&Manage Resources";
             btnManageResources.UseVisualStyleBackColor = false;
@@ -175,10 +175,10 @@
             btnManageCourses.FlatStyle = FlatStyle.Flat;
             btnManageCourses.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnManageCourses.ForeColor = Color.White;
-            btnManageCourses.Location = new Point(25, 188);
+            btnManageCourses.Location = new Point(25, 139);
             btnManageCourses.Margin = new Padding(3, 4, 3, 4);
             btnManageCourses.Name = "btnManageCourses";
-            btnManageCourses.Size = new Size(300, 56);
+            btnManageCourses.Size = new Size(300, 42);
             btnManageCourses.TabIndex = 2;
             btnManageCourses.Text = "&Manage Courses";
             btnManageCourses.UseVisualStyleBackColor = false;
@@ -190,10 +190,10 @@
             btnViewReports.FlatStyle = FlatStyle.Flat;
             btnViewReports.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnViewReports.ForeColor = Color.White;
-            btnViewReports.Location = new Point(25, 256);
+            btnViewReports.Location = new Point(25, 191);
             btnViewReports.Margin = new Padding(3, 4, 3, 4);
             btnViewReports.Name = "btnViewReports";
-            btnViewReports.Size = new Size(300, 56);
+            btnViewReports.Size = new Size(300, 42);
             btnViewReports.TabIndex = 3;
             btnViewReports.Text = "&View Reports";
             btnViewReports.UseVisualStyleBackColor = false;
@@ -205,10 +205,10 @@
             btnSearch.FlatStyle = FlatStyle.Flat;
             btnSearch.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnSearch.ForeColor = Color.White;
-            btnSearch.Location = new Point(25, 325);
-            btnSearch.Margin = new Padding(3, 4, 3, 4);
+            btnSearch.Location = new Point(25, 243);
+            btnSearch.Margin = new Padding (3, 4, 3, 4);
             btnSearch.Name = "btnSearch";
-            btnSearch.Size = new Size(300, 56);
+            btnSearch.Size = new Size(300, 42);
             btnSearch.TabIndex = 4;
             btnSearch.Text = "&Search Resources";
             btnSearch.UseVisualStyleBackColor = false;
@@ -220,10 +220,10 @@
             btnExit.FlatStyle = FlatStyle.Flat;
             btnExit.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnExit.ForeColor = Color.White;
-            btnExit.Location = new Point(573, 524);
+            btnExit.Location = new Point(550, 270);
             btnExit.Margin = new Padding(3, 4, 3, 4);
             btnExit.Name = "btnExit";
-            btnExit.Size = new Size(150, 56);
+            btnExit.Size = new Size(150, 45);
             btnExit.TabIndex = 7;
             btnExit.Text = "E&xit";
             btnExit.UseVisualStyleBackColor = false;
@@ -232,7 +232,7 @@
             // pictureBox1
             // 
             pictureBox1.BackColor = Color.Transparent;
-            pictureBox1.Location = new Point(50, 38);
+            pictureBox1.Location = new Point(50, 15);
             pictureBox1.Margin = new Padding(3, 4, 3, 4);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(80, 100);
@@ -245,10 +245,10 @@
             btnLogout.FlatStyle = FlatStyle.Flat;
             btnLogout.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnLogout.ForeColor = Color.White;
-            btnLogout.Location = new Point(573, 656);
+            btnLogout.Location = new Point(550, 430);
             btnLogout.Margin = new Padding(3, 4, 3, 4);
             btnLogout.Name = "btnLogout";
-            btnLogout.Size = new Size(150, 56);
+            btnLogout.Size = new Size(150, 45);
             btnLogout.TabIndex = 10;
             btnLogout.Text = "&Logout";
             btnLogout.UseVisualStyleBackColor = false;
@@ -260,10 +260,10 @@
             btnAdminTools.FlatStyle = FlatStyle.Flat;
             btnAdminTools.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAdminTools.ForeColor = Color.White;
-            btnAdminTools.Location = new Point(573, 588);
+            btnAdminTools.Location = new Point(550, 375);
             btnAdminTools.Margin = new Padding(3, 4, 3, 4);
             btnAdminTools.Name = "btnAdminTools";
-            btnAdminTools.Size = new Size(150, 56);
+            btnAdminTools.Size = new Size(150, 45);
             btnAdminTools.TabIndex = 11;
             btnAdminTools.Text = "&Admin Tools";
             btnAdminTools.UseVisualStyleBackColor = false;
@@ -275,7 +275,7 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(750, 900);
+            ClientSize = new Size(750, 600);
             Controls.Add(pictureBox1);
             Controls.Add(btnExit);
             Controls.Add(grpNavigation);

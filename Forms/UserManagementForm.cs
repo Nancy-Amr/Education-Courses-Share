@@ -5,6 +5,8 @@ using CoursesSharesDB.DAL;
 using CoursesSharesDB.Models;
 using System.Collections.Generic;
 using Education_Courses.Helpers;
+using System.Linq;
+using System.ComponentModel;
 
 namespace CoursesSharesDB.Forms
 {
@@ -77,6 +79,7 @@ namespace CoursesSharesDB.Forms
                 idColumn.DataPropertyName = "Id";
                 idColumn.HeaderText = "User ID";
                 idColumn.Width = 80;
+                idColumn.SortMode = DataGridViewColumnSortMode.Automatic;
                 dataGridViewUsers.Columns.Add(idColumn);
 
                 DataGridViewTextBoxColumn usernameColumn = new DataGridViewTextBoxColumn();
@@ -84,6 +87,7 @@ namespace CoursesSharesDB.Forms
                 usernameColumn.DataPropertyName = "Username";
                 usernameColumn.HeaderText = "Username";
                 usernameColumn.Width = 150;
+                usernameColumn.SortMode = DataGridViewColumnSortMode.Automatic;
                 dataGridViewUsers.Columns.Add(usernameColumn);
 
                 DataGridViewTextBoxColumn emailColumn = new DataGridViewTextBoxColumn();
@@ -91,6 +95,7 @@ namespace CoursesSharesDB.Forms
                 emailColumn.DataPropertyName = "Email";
                 emailColumn.HeaderText = "Email";
                 emailColumn.Width = 200;
+                emailColumn.SortMode = DataGridViewColumnSortMode.Automatic;
                 dataGridViewUsers.Columns.Add(emailColumn);
 
                 DataGridViewTextBoxColumn roleColumn = new DataGridViewTextBoxColumn();
@@ -98,6 +103,7 @@ namespace CoursesSharesDB.Forms
                 roleColumn.DataPropertyName = "Role";
                 roleColumn.HeaderText = "Role";
                 roleColumn.Width = 100;
+                roleColumn.SortMode = DataGridViewColumnSortMode.Automatic;
                 dataGridViewUsers.Columns.Add(roleColumn);
 
                 DataGridViewTextBoxColumn createdAtColumn = new DataGridViewTextBoxColumn();
@@ -105,6 +111,7 @@ namespace CoursesSharesDB.Forms
                 createdAtColumn.DataPropertyName = "CreatedAt";
                 createdAtColumn.HeaderText = "Created Date";
                 createdAtColumn.Width = 120;
+                createdAtColumn.SortMode = DataGridViewColumnSortMode.Automatic;
                 dataGridViewUsers.Columns.Add(createdAtColumn);
 
                 // Add action columns only for admin
@@ -132,6 +139,64 @@ namespace CoursesSharesDB.Forms
             {
                 MessageBox.Show($"Error loading users: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private ListSortDirection _lastSortDirection = ListSortDirection.Ascending;
+        private string _lastSortColumn = "";
+
+        private void dataGridViewUsers_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // Don't sort button columns
+            if (e.ColumnIndex >= 0 && dataGridViewUsers.Columns[e.ColumnIndex] is DataGridViewTextBoxColumn)
+            {
+                string columnName = dataGridViewUsers.Columns[e.ColumnIndex].DataPropertyName;
+                
+                // Determine sort direction
+                ListSortDirection direction;
+                if (_lastSortColumn == columnName)
+                {
+                    // Toggle direction if same column
+                    direction = _lastSortDirection == ListSortDirection.Ascending 
+                        ? ListSortDirection.Descending 
+                        : ListSortDirection.Ascending;
+                }
+                else
+                {
+                    // Default to ascending for new column
+                    direction = ListSortDirection.Ascending;
+                }
+
+                // Sort the list
+                if (direction == ListSortDirection.Ascending)
+                {
+                    _usersList = _usersList.OrderBy(u => u.GetType().GetProperty(columnName)?.GetValue(u)).ToList();
+                }
+                else
+                {
+                    _usersList = _usersList.OrderByDescending(u => u.GetType().GetProperty(columnName)?.GetValue(u)).ToList();
+                }
+
+                // Update binding source
+                _bindingSource.DataSource = _usersList;
+                _bindingSource.ResetBindings(false);
+
+                // Set sort glyph
+                dataGridViewUsers.Columns[e.ColumnIndex].HeaderCell.SortGlyphDirection = 
+                    direction == ListSortDirection.Ascending ? SortOrder.Ascending : SortOrder.Descending;
+
+                // Clear other column glyphs
+                for (int i = 0; i < dataGridViewUsers.Columns.Count; i++)
+                {
+                    if (i != e.ColumnIndex)
+                    {
+                        dataGridViewUsers.Columns[i].HeaderCell.SortGlyphDirection = SortOrder.None;
+                    }
+                }
+
+                // Remember last sort
+                _lastSortColumn = columnName;
+                _lastSortDirection = direction;
             }
         }
 

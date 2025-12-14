@@ -413,6 +413,39 @@
             this.lblTotalCourses.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotalCourses.Location = new System.Drawing.Point(350, 20);
             this.lblTotalCourses.Name = "lblTotalCourses";
+            this.lblTotalCourses.Size = new System.Drawing.Size(130, 18);
+            this.lblTotalCourses.TabIndex = 10;
+            this.lblTotalCourses.Text = "Total Courses: 0";
+            // 
+            // CourseManagementForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(924, 660);
+            this.Controls.Add(this.lblTotalCourses);
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.btnManageTopics);
+            this.Controls.Add(this.btnClear);
+            this.Controls.Add(this.btnDelete);
+            this.Controls.Add(this.btnUpdate);
+            this.Controls.Add(this.btnAdd);
+            this.Controls.Add(this.grpDetails);
+            this.Controls.Add(this.dataGridViewCourses);
+            this.Controls.Add(this.grpSearch);
+            this.Controls.Add(this.lblTitle);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.Name = "CourseManagementForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Course Management";
+            this.grpSearch.ResumeLayout(false);
+            this.grpSearch.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCourses)).EndInit();
+            this.grpDetails.ResumeLayout(false);
+            this.grpDetails.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
         }
     }
 }
