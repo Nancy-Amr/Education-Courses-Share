@@ -29,9 +29,12 @@ namespace CoursesSharesDB.Forms
 
             if (isStudent)
             {
-                btnManageCourses.Enabled = false;
-                btnManageCourses.Text = "Manage Courses (Instructor Only)";
-                btnManageCourses.BackColor = Color.Gray;
+                btnManageCourses.Visible = false; // Hidden for students
+            }
+            else
+            {
+                btnManageCourses.Visible = true; // Visible for others (Instructor/Admin)
+                btnManageCourses.Enabled = true;
             }
 
             // Show admin-specific welcome and tools

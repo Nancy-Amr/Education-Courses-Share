@@ -14,6 +14,7 @@ namespace CoursesSharesDB.Forms
     {
         private Repository _repository;
         private BindingSource _bindingSource;
+        private const int ASSIGNMENT_CATEGORY_ID = 2; // Constant for Assignments
 
         public ResourceManagementForm()
         {
@@ -88,7 +89,7 @@ namespace CoursesSharesDB.Forms
             if (SessionManager.IsAdmin || SessionManager.CurrentUser == null)
                 return allResources;
 
-            // If Instructor, see only resources for their courses
+            // If Instructor, see only resources for their courses (Assignments + Submissions)
             if (SessionManager.IsInstructor)
             {
                 string username = SessionManager.CurrentUser.Username;
@@ -100,10 +101,24 @@ namespace CoursesSharesDB.Forms
                     .Select(c => c.Code)
                     .ToList();
 
-                return allResources.Where(r => myCourseCodes.Contains(r.CourseCode)).ToList();
+                // Instructors see everything for their courses
+                return allResources.Where(r => r.CourseCode != null && myCourseCodes.Contains(r.CourseCode)).ToList();
             }
 
-            // Students or others see all (read-only view)
+            // Students:
+            // 1. Can separate non-submissions (Lectures, Assignments from instructors)
+            // 2. Can see their OWN submissions
+            // 3. CANNOT see other students' submissions
+            if (SessionManager.IsStudent)
+            {
+                string myUsername = SessionManager.CurrentUser.Username;
+                return allResources.Where(r => 
+                    !r.Name.StartsWith("[Submission]") || // Not a submission (Instructor content)
+                    r.UploaderUsername == myUsername      // Or my own submission
+                ).ToList();
+            }
+
+            // Fallback (e.g. unknown role), show all
             return allResources;
         }
 
@@ -177,18 +192,21 @@ namespace CoursesSharesDB.Forms
         {
             if (SessionManager.IsStudent)
             {
-                // Students can only view
-                btnAdd.Enabled = false;
-                btnUpdate.Enabled = false;
-                btnAdd.Enabled = false;
-                btnUpdate.Enabled = false;
+                // Students can READ everything
+                // Students can SUBMIT (Assignments only) and REACT
+                btnAdd.Enabled = false; // Disable generic Add
+                btnUpdate.Enabled = false; 
                 btnDelete.Enabled = false;
-                btnBrowse.Enabled = false; // Disable upload for students
+                btnBrowse.Enabled = false; // Disable generic browse
+                btnSubmit.Visible = true; // Show Submit button
+                btnSubmit.Enabled = false; // Disabled until Assignment selected
 
                 // Visual cues
                 btnAdd.BackColor = Color.LightGray;
-                btnUpdate.BackColor = Color.LightGray;
-                btnDelete.BackColor = Color.LightGray;
+            }
+            else
+            {
+                btnSubmit.Visible = false; // Hide for instructors/admin
             }
         }
 
@@ -366,11 +384,46 @@ namespace CoursesSharesDB.Forms
             else
                 cmbTopics.SelectedIndex = -1;
 
+            // Disable React button if no user logged in
+            btnReact.Enabled = (SessionManager.CurrentUser != null);
+            
+            // Update button symbol contextually
+            if (SessionManager.CurrentUser != null && res.Reactions != null && res.Reactions.Contains(SessionManager.CurrentUser.Username))
+                btnReact.Text = "👎"; // Next action: Unlike
+            else
+                btnReact.Text = "👍"; // Next action: Like
+
             txtReactions.Text = res.Reactions != null ? string.Join(", ", res.Reactions) : "";
+
+            // Handle Submit Button Visibility/Enablement for Students
+            if (SessionManager.IsStudent)
+            {
+                // Enable Submit ONLY if Category is Assignment
+                if (res.CategoryId == ASSIGNMENT_CATEGORY_ID)
+                {
+                    btnSubmit.Enabled = true;
+                    btnSubmit.BackColor = Color.FromArgb(23, 162, 184); // Active Cyan
+                }
+                else
+                {
+                    btnSubmit.Enabled = false;
+                    btnSubmit.BackColor = Color.Gray;
+                }
+
+                // Enable Update/Delete ONLY if Student OWNS the resource (e.g. their submission)
+                bool isOwner = res.UploaderUsername == SessionManager.CurrentUser.Username;
+                btnUpdate.Enabled = isOwner;
+                btnDelete.Enabled = isOwner;
+                
+                // Visual cues for Update/Delete
+                btnUpdate.BackColor = isOwner ? Color.FromArgb(0, 123, 255) : Color.Gray;
+                btnDelete.BackColor = isOwner ? Color.FromArgb(220, 53, 69) : Color.Gray;
+            }
         }
 
         private bool ValidateInputs()
         {
+             // Simplified validation
             if (string.IsNullOrWhiteSpace(txtName.Text))
             {
                 MessageBox.Show("Name is required.");
@@ -430,7 +483,43 @@ namespace CoursesSharesDB.Forms
                 list = list.Where(r => r.CourseCode.ToLower().Contains(txtSearchCourseCode.Text.ToLower())).ToList();
 
             _bindingSource.DataSource = list;
+            _bindingSource.DataSource = list;
             dataGridViewResources.DataSource = _bindingSource;
+        }
+
+        private void btnReact_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewResources.CurrentRow == null) return;
+            if (SessionManager.CurrentUser == null) return;
+
+            var res = (Resource)dataGridViewResources.CurrentRow.DataBoundItem;
+            string username = SessionManager.CurrentUser.Username;
+
+            if (res.Reactions == null) res.Reactions = new List<string>();
+
+            if (res.Reactions.Contains(username))
+            {
+                // Unlike
+                res.Reactions.Remove(username);
+                btnReact.Text = "👍"; // Reset to Like
+            }
+            else
+            {
+                // Like
+                res.Reactions.Add(username);
+                btnReact.Text = "👎"; // Set to Unlike
+            }
+
+            // Update DB
+            if (_repository.UpdateResource(res))
+            {
+                // Refresh UI text without reloading entire grid (smoother)
+                txtReactions.Text = string.Join(", ", res.Reactions);
+            }
+            else
+            {
+                MessageBox.Show("Failed to update reaction.");
+            }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
@@ -438,6 +527,66 @@ namespace CoursesSharesDB.Forms
             txtSearchName.Clear();
             txtSearchCourseCode.Clear();
             LoadResources();
+        }
+
+        private void btnSubmit_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewResources.CurrentRow == null) return;
+            var parentRes = (Resource)dataGridViewResources.CurrentRow.DataBoundItem;
+            
+            // Double check it's an assignment
+            if (parentRes.CategoryId != ASSIGNMENT_CATEGORY_ID)
+            {
+                MessageBox.Show("You can only submit to Assignments.");
+                return;
+            }
+
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Title = "Select Submission File";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        string sourcePath = ofd.FileName;
+                        string filename = Path.GetFileName(sourcePath);
+                        string uploadsDir = Path.Combine(Application.StartupPath, "Uploads");
+                        if (!Directory.Exists(uploadsDir)) Directory.CreateDirectory(uploadsDir);
+
+                        string uniqueName = $"SUB_{SessionManager.CurrentUser.Username}_{DateTime.Now.Ticks}_{filename}";
+                        string destPath = Path.Combine(uploadsDir, uniqueName);
+                        File.Copy(sourcePath, destPath);
+
+                        // Create Submission Resource
+                        var submission = new Resource
+                        {
+                            Id = _repository.GetNextResourceId(),
+                            Name = $"[Submission] {parentRes.Name} - {SessionManager.CurrentUser.Username}",
+                            Description = $"Submission for {parentRes.Name}",
+                            CourseCode = parentRes.CourseCode,
+                            UploaderUsername = SessionManager.CurrentUser.Username,
+                            CategoryId = ASSIGNMENT_CATEGORY_ID, // Use same category or maybe a "Submission" category if existed? Keeping Assignment for now.
+                            UploadDate = DateTime.Now,
+                            Topics = parentRes.Topics, // Tag with same topics
+                            Content = new Content
+                            {
+                                Type = "File",
+                                Url = $"Uploads/{uniqueName}",
+                                FileType = Path.GetExtension(filename).Trim('.').ToUpper()
+                            },
+                            Reactions = new List<string>()
+                        };
+
+                        _repository.InsertResource(submission);
+                        MessageBox.Show("Solution submitted successfully!");
+                        LoadResources();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Submission failed: {ex.Message}");
+                    }
+                }
+            }
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)

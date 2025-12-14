@@ -51,10 +51,12 @@
         private System.Windows.Forms.ComboBox cmbTopics; // Changed
         private System.Windows.Forms.Label lblReactions;
         private System.Windows.Forms.TextBox txtReactions;
+        private System.Windows.Forms.Button btnReact; // Added btnReact
 
         // Button Panel
         private System.Windows.Forms.Panel pnlControls;
         private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Button btnSubmit; // Added btnSubmit
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnClear;
@@ -115,7 +117,18 @@
             btnClear = new System.Windows.Forms.Button();
             btnDelete = new System.Windows.Forms.Button();
             btnUpdate = new System.Windows.Forms.Button();
-            btnAdd = new System.Windows.Forms.Button();
+            btnSubmit = new System.Windows.Forms.Button(); // Init btnSubmit
+            btnAdd = new System.Windows.Forms.Button(); // Restored btnAdd
+            
+            // Details
+            grpDetails.SuspendLayout(); // Temp suspend
+            // Note: grpDetails is instantiated at top of InitComp in typical designer but here likely fine? 
+            // Wait, standard designer puts new at top. 
+            // In my file: grpDetails = new System.Windows.Forms.GroupBox(); IS at line 87.
+            
+            txtReactions = new System.Windows.Forms.TextBox();
+            lblReactions = new System.Windows.Forms.Label();
+            btnReact = new System.Windows.Forms.Button();
 
             ((System.ComponentModel.ISupportInitialize)(dataGridViewResources)).BeginInit();
             grpSearch.SuspendLayout();
@@ -199,14 +212,14 @@
             lblSearchCourse.AutoSize = true;
             lblSearchCourse.Location = new System.Drawing.Point(270, 25);
             lblSearchCourse.Name = "lblSearchCourse";
-            lblSearchCourse.Size = new System.Drawing.Size(57, 17);
+            lblSearchCourse.Size = new System.Drawing.Size(95, 17);
             lblSearchCourse.TabIndex = 2;
-            lblSearchCourse.Text = "Course:";
+            lblSearchCourse.Text = "Course Code:";
 
             // 
             // txtSearchCourseCode
             // 
-            txtSearchCourseCode.Location = new System.Drawing.Point(330, 22);
+            txtSearchCourseCode.Location = new System.Drawing.Point(370, 22); // Shifted right to fit label
             txtSearchCourseCode.Name = "txtSearchCourseCode";
             txtSearchCourseCode.Size = new System.Drawing.Size(120, 22);
             txtSearchCourseCode.TabIndex = 3;
@@ -216,7 +229,7 @@
             // 
             btnSearch.BackColor = System.Drawing.Color.FromArgb(0, 123, 255);
             btnSearch.ForeColor = System.Drawing.Color.White;
-            btnSearch.Location = new System.Drawing.Point(480, 18);
+            btnSearch.Location = new System.Drawing.Point(510, 18); // Shifted right
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new System.Drawing.Size(90, 30);
             btnSearch.TabIndex = 4;
@@ -229,7 +242,7 @@
             // 
             btnRefresh.BackColor = System.Drawing.Color.Gray;
             btnRefresh.ForeColor = System.Drawing.Color.White;
-            btnRefresh.Location = new System.Drawing.Point(580, 18);
+            btnRefresh.Location = new System.Drawing.Point(610, 18); // Shifted right
             btnRefresh.Name = "btnRefresh";
             btnRefresh.Size = new System.Drawing.Size(90, 30);
             btnRefresh.TabIndex = 5;
@@ -240,6 +253,7 @@
             // 
             // grpDetails
             // 
+            grpDetails.Controls.Add(btnReact); // Add to GroupBox
             grpDetails.Controls.Add(txtReactions);
             grpDetails.Controls.Add(lblReactions);
             grpDetails.Controls.Add(cmbTopics); // Updated to ComboBox
@@ -335,6 +349,15 @@
             lblReactions.AutoSize = true; lblReactions.Location = new System.Drawing.Point(650, 175); lblReactions.Text = "Reactions:";
             txtReactions.Location = new System.Drawing.Point(730, 172); txtReactions.Size = new System.Drawing.Size(400, 22);
 
+            // btnReact
+            btnReact.Location = new System.Drawing.Point(1140, 170);
+            btnReact.Name = "btnReact";
+            btnReact.Size = new System.Drawing.Size(40, 26);
+            btnReact.TabIndex = 100;
+            btnReact.Text = "👍";
+            btnReact.UseVisualStyleBackColor = true;
+            btnReact.Click += new System.EventHandler(this.btnReact_Click);
+
 
             // 
             // pnlControls
@@ -343,6 +366,11 @@
             pnlControls.Controls.Add(btnClear);
             pnlControls.Controls.Add(btnDelete);
             pnlControls.Controls.Add(btnUpdate);
+            pnlControls.Controls.Add(btnClose);
+            pnlControls.Controls.Add(btnClear);
+            pnlControls.Controls.Add(btnDelete);
+            pnlControls.Controls.Add(btnUpdate);
+            pnlControls.Controls.Add(btnSubmit); // Add to panel (Order matters for visual stack, usually last add is top/first?)
             pnlControls.Controls.Add(btnAdd);
             pnlControls.Location = new System.Drawing.Point(12, 550);
             pnlControls.Name = "pnlControls";
@@ -376,6 +404,20 @@
             btnUpdate.Text = "Update";
             btnUpdate.UseVisualStyleBackColor = false;
             btnUpdate.Click += btnUpdate_Click;
+
+            // 
+            // btnSubmit
+            // 
+            btnSubmit.BackColor = System.Drawing.Color.FromArgb(23, 162, 184); // Info Cyan
+            btnSubmit.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btnSubmit.ForeColor = System.Drawing.Color.White;
+            btnSubmit.Location = new System.Drawing.Point(680, 10); // Far right of main group
+            btnSubmit.Name = "btnSubmit";
+            btnSubmit.Size = new System.Drawing.Size(140, 40);
+            btnSubmit.TabIndex = 99;
+            btnSubmit.Text = "Submit";
+            btnSubmit.UseVisualStyleBackColor = false;
+            btnSubmit.Click += btnSubmit_Click;
 
             // 
             // btnDelete
