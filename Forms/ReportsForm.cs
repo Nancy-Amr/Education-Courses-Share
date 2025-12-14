@@ -306,8 +306,8 @@ namespace CoursesSharesDB.Forms
 
                 dataGridViewReports.DataSource = dt;
 
-                // Auto-size columns
-                dataGridViewReports.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+                // Distribute columns equally across available width
+                dataGridViewReports.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             }
             catch (Exception ex)
             {

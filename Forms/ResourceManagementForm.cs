@@ -23,6 +23,7 @@ namespace CoursesSharesDB.Forms
             _bindingSource = new BindingSource();
 
             ApplyModernStyle();
+            SetupDataGridViewColumns(); // Implement custom columns
 
             LoadComboBoxes();
             LoadResources();
@@ -39,7 +40,11 @@ namespace CoursesSharesDB.Forms
             dataGridViewResources.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(40, 167, 69); // Green theme for resources
             dataGridViewResources.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dataGridViewResources.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            dataGridViewResources.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
             dataGridViewResources.DefaultCellStyle.Font = new Font("Segoe UI", 9);
+            
+            // Fill the width to remove empty gray space
+            dataGridViewResources.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             // Disable manual ID entry
             txtId.ReadOnly = true;
