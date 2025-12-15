@@ -57,9 +57,9 @@
         private Button btnRefresh;
         private Button btnRunBackup;
         private Button btnUserManagement;
-        private Button btnDatabaseTools;
+
         private Button btnExportData;
-        private Button btnEmergencyLockdown;
+
         private Button btnClose;
 
         // Help Link
@@ -118,9 +118,9 @@
             btnRefresh = new Button();
             btnRunBackup = new Button();
             btnUserManagement = new Button();
-            btnDatabaseTools = new Button();
+
             btnExportData = new Button();
-            btnEmergencyLockdown = new Button();
+
             btnClose = new Button();
             linkLabelHelp = new LinkLabel();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -592,20 +592,7 @@
             btnUserManagement.Text = "&User Management";
             btnUserManagement.UseVisualStyleBackColor = false;
             btnUserManagement.Click += btnUserManagement_Click;
-            // 
-            // btnDatabaseTools
-            // 
-            btnDatabaseTools.BackColor = Color.FromArgb(23, 162, 184);
-            btnDatabaseTools.FlatStyle = FlatStyle.Flat;
-            btnDatabaseTools.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnDatabaseTools.ForeColor = Color.White;
-            btnDatabaseTools.Location = new Point(604, 600);
-            btnDatabaseTools.Name = "btnDatabaseTools";
-            btnDatabaseTools.Size = new Size(140, 40);
-            btnDatabaseTools.TabIndex = 11;
-            btnDatabaseTools.Text = "&Database Tools";
-            btnDatabaseTools.UseVisualStyleBackColor = false;
-            btnDatabaseTools.Click += btnDatabaseTools_Click;
+
             // 
             // btnExportData
             // 
@@ -620,20 +607,7 @@
             btnExportData.Text = "&Export Data";
             btnExportData.UseVisualStyleBackColor = false;
             btnExportData.Click += btnExportData_Click;
-            // 
-            // btnEmergencyLockdown
-            // 
-            btnEmergencyLockdown.BackColor = Color.Red;
-            btnEmergencyLockdown.FlatStyle = FlatStyle.Flat;
-            btnEmergencyLockdown.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnEmergencyLockdown.ForeColor = Color.White;
-            btnEmergencyLockdown.Location = new Point(800, 650);
-            btnEmergencyLockdown.Name = "btnEmergencyLockdown";
-            btnEmergencyLockdown.Size = new Size(170, 35);
-            btnEmergencyLockdown.TabIndex = 13;
-            btnEmergencyLockdown.Text = "🚨 &Emergency";
-            btnEmergencyLockdown.UseVisualStyleBackColor = false;
-            btnEmergencyLockdown.Click += btnEmergencyLockdown_Click;
+
             // 
             // btnClose
             // 
@@ -668,9 +642,9 @@
             ClientSize = new Size(1000, 710);
             Controls.Add(linkLabelHelp);
             Controls.Add(btnClose);
-            Controls.Add(btnEmergencyLockdown);
+
             Controls.Add(btnExportData);
-            Controls.Add(btnDatabaseTools);
+
             Controls.Add(btnUserManagement);
             Controls.Add(btnRunBackup);
             Controls.Add(btnRefresh);

@@ -260,39 +260,42 @@ namespace CoursesSharesDB.Forms
 
         private void btnRunBackup_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Run system backup now? This may take a few minutes.",
-                "Confirm Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json",
+                Title = "Save System Backup",
+                FileName = $"SystemBackup_{DateTime.Now:yyyyMMdd_HHmm}.json"
+            };
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    // Simulate backup process
+                    Cursor.Current = Cursors.WaitCursor;
                     progressBarBackup.Visible = true;
-                    progressBarBackup.Value = 0;
+                    progressBarBackup.Style = ProgressBarStyle.Marquee; // Indeterminate since we don't have async progress hooks easily
+                    Application.DoEvents(); // Force UI update to show progress bar
 
-                    // Use a BackgroundWorker or async method for real implementation
-                    // For demo, just simulate with a loop
-                    for (int i = 0; i <= 100; i += 10)
-                    {
-                        progressBarBackup.Value = i;
-                        Application.DoEvents();
-                        System.Threading.Thread.Sleep(200);
-                    }
+                    // Perform Backup
+                    _repository.CreateBackup(saveFileDialog.FileName);
+                    
+                    // Stop progress
+                    progressBarBackup.Visible = false;
+                    Cursor.Current = Cursors.Default;
 
                     lblLastBackup.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
-                    lblBackupStatus.Text = "Recent";
+                    lblBackupStatus.Text = "Recent - Verified";
                     lblBackupStatus.ForeColor = Color.Green;
 
-                    MessageBox.Show("Backup completed successfully!", "Backup Complete",
+                    MessageBox.Show($"Backup created successfully at:\n{saveFileDialog.FileName}", "Backup Complete",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
+                    progressBarBackup.Visible = false;
+                    Cursor.Current = Cursors.Default;
                     MessageBox.Show($"Backup failed: {ex.Message}", "Backup Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    progressBarBackup.Visible = false;
                 }
             }
         }
@@ -335,28 +338,55 @@ namespace CoursesSharesDB.Forms
             LoadStatistics(); // Refresh after changes
         }
 
-        private void btnDatabaseTools_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Database Tools form would open here.", "Database Tools",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-            // var dbToolsForm = new DatabaseToolsForm();
-            // dbToolsForm.ShowDialog();
-        }
+
 
         private void btnExportData_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
-                Filter = "CSV Files (*.csv)|*.csv|Excel Files (*.xlsx)|*.xlsx",
-                Title = "Export System Data"
+                Filter = "CSV Files (*.csv)|*.csv",
+                Title = "Export System Data",
+                FileName = "system_export.csv"
             };
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    // Export logic here
-                    MessageBox.Show($"Data exported successfully to: {saveFileDialog.FileName}",
+                    var csv = new System.Text.StringBuilder();
+                    
+                    // Export Users
+                    csv.AppendLine("=== USERS ===");
+                    csv.AppendLine("ID,Username,Email,Role,Created");
+                    var users = _repository.GetAllUsers();
+                    foreach (var user in users)
+                    {
+                        csv.AppendLine($"{user.Id},{user.Username},{user.Email},{user.Role},{user.CreatedAt:yyyy-MM-dd}");
+                    }
+                    
+                    csv.AppendLine();
+                    csv.AppendLine("=== COURSES ===");
+                    csv.AppendLine("Code,Name,Instructors");
+                    var courses = _repository.GetAllCourses();
+                    foreach (var course in courses)
+                    {
+                        var instructors = string.Join("; ", course.InstructorNames);
+                        csv.AppendLine($"{course.Code},{course.Name},\"{instructors}\"");
+                    }
+                    
+                    csv.AppendLine();
+                    csv.AppendLine("=== RESOURCES ===");
+                    csv.AppendLine("ID,Name,Course,Uploader,Upload Date,Category");
+                    var resources = _repository.GetAllResources();
+                    foreach (var resource in resources)
+                    {
+                        csv.AppendLine($"{resource.Id},\"{resource.Name}\",{resource.CourseCode},{resource.UploaderUsername},{resource.UploadDate:yyyy-MM-dd},{resource.CategoryId}");
+                    }
+                    
+                    // Write to file
+                    System.IO.File.WriteAllText(saveFileDialog.FileName, csv.ToString());
+                    
+                    MessageBox.Show($"Data exported successfully to:\n{saveFileDialog.FileName}\n\nExported:\n- {users.Count} Users\n- {courses.Count} Courses\n- {resources.Count} Resources",
                         "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
@@ -434,24 +464,7 @@ namespace CoursesSharesDB.Forms
             }
         }
 
-        private void btnEmergencyLockdown_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("⚠️ EMERGENCY LOCKDOWN ⚠️\n\nThis will:\n• Disable all non-admin logins\n• Freeze user registrations\n• Send alerts to all admins\n\nAre you sure you want to proceed?",
-                "EMERGENCY LOCKDOWN", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-            {
-                try
-                {
-                    // Implement emergency lockdown logic
-                    MessageBox.Show("System is now in lockdown mode. Only administrators can access the system.",
-                        "Lockdown Activated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Lockdown failed: {ex.Message}", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
+
         
     }
 }

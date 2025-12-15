@@ -209,6 +209,28 @@ namespace CoursesSharesDB.DAL
             // For now, just write to console or log file
             Console.WriteLine($"[Activity] {DateTime.Now}: {user} - {action} - {details}");
         }
+
+        // System Backup
+        public void CreateBackup(string filePath)
+        {
+            var backupData = new BackupData
+            {
+                Users = GetAllUsers(),
+                Courses = GetAllCourses(),
+                Resources = GetAllResources(),
+                Departments = GetAllDepartments(),
+                Categories = GetAllCategories(),
+                BackupDate = DateTime.Now
+            };
+
+            // Using System.Text.Json (Built-in for .NET 8)
+            var options = new System.Text.Json.JsonSerializerOptions 
+            { 
+                WriteIndented = true 
+            };
+            string json = System.Text.Json.JsonSerializer.Serialize(backupData, options);
+            System.IO.File.WriteAllText(filePath, json);
+        }
     }
     
 }
