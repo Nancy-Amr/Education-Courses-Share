@@ -3,6 +3,7 @@ using System;
 using System.Windows.Forms;
 using CoursesSharesDB.DAL;
 using System.Drawing;
+using Education_Courses.Helpers;
 
 namespace CoursesSharesDB.Forms
 {
@@ -199,8 +200,9 @@ namespace CoursesSharesDB.Forms
         // In MainForm.cs, add to your navigation
         private void btnAdminTools_Click(object sender, EventArgs e)
         {
-            // Check if user is admin
-            if (SessionManager.CurrentUser == null || SessionManager.CurrentUser.Role != "admin")
+            // Check if user is admin (Case-insensitive)
+            if (SessionManager.CurrentUser == null || 
+                !SessionManager.CurrentUser.Role.Equals("admin", StringComparison.OrdinalIgnoreCase))
             {
                 MessageBox.Show("Administrator access required!",
                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -215,8 +217,8 @@ namespace CoursesSharesDB.Forms
                 -1,
                 -1);
 
-            // Validate password (use your secure validation method)
-            if (password == "admin123") // Replace with secure validation
+            // Validate password against the current logged-in admin's password
+            if (PasswordHelper.VerifyPassword(password, SessionManager.CurrentUser.Password))
             {
                 var adminTools = new AdminToolsForm();
                 adminTools.ShowDialog();

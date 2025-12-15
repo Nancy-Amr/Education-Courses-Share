@@ -226,7 +226,7 @@ namespace CoursesSharesDB.Forms
                     Id = string.IsNullOrWhiteSpace(txtId.Text) ? 0 : int.Parse(txtId.Text),
                     Username = txtUsername.Text,
                     Email = txtEmail.Text,
-                    Password = txtPassword.Text, // Let User model handle hashing
+                    Password = PasswordHelper.HashPassword(txtPassword.Text), // Hash password before storing
                     Role = cmbRole.Text,
                     ProfilePicture = txtProfilePic.Text,
                     CreatedAt = DateTime.Now
@@ -259,8 +259,8 @@ namespace CoursesSharesDB.Forms
                     string passwordToUse;
                     if (!string.IsNullOrWhiteSpace(txtPassword.Text) && txtPassword.Text != "******")
                     {
-                        // New password provided
-                        passwordToUse = txtPassword.Text;
+                        // New password provided - Hash it!
+                        passwordToUse = PasswordHelper.HashPassword(txtPassword.Text);
                     }
                     else if (existingUser != null)
                     {
