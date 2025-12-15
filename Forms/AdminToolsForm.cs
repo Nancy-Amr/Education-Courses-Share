@@ -42,17 +42,14 @@ namespace CoursesSharesDB.Forms
                 var users = _repository.GetAllUsers();
                 var resources = _repository.GetAllResources();
                 var courses = _repository.GetAllCourses();
-                var enrollments = _repository.GetAllEnrollments();
+                // var enrollments = _repository.GetAllEnrollments();
 
                 lblTotalUsers.Text = users.Count.ToString();
-                //lblTotalResources.Text = resources.Count.ToString();
-                //lblTotalCourses.Text = courses.Count.ToString();
-                lblTotalEnrollments.Text = enrollments.Count.ToString();
-
-                // Calculate active users (logged in last 7 days)
-                int activeUsers = CalculateActiveUsers(users);
-                lblActiveUsers.Text = activeUsers.ToString();
-
+                
+                // Updated Statistics
+                lblTotalCourses.Text = courses.Count.ToString();
+                lblTotalResources.Text = resources.Count.ToString();
+                
                 // Calculate system load
                 CalculateSystemLoad();
             }
@@ -61,13 +58,6 @@ namespace CoursesSharesDB.Forms
                 MessageBox.Show($"Error loading statistics: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private int CalculateActiveUsers(List<User> users)
-        {
-            // In a real system, you would check last login date
-            // For demo, return 75% of total users
-            return (int)(users.Count * 0.75);
         }
 
         private void CalculateSystemLoad()

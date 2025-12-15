@@ -13,10 +13,10 @@
         private GroupBox grpStatistics;
         private Label lblStatUsers;
         private Label lblTotalUsers;
-        private Label lblStatEnrollments;
-        private Label lblTotalEnrollments;
-        private Label lblStatActiveUsers;
-        private Label lblActiveUsers;
+        private Label lblStatCourses;
+        private Label lblTotalCourses;
+        private Label lblStatResources;
+        private Label lblTotalResources;
 
         // System Health Panel
         private GroupBox grpSystemHealth;
@@ -82,10 +82,10 @@
             grpStatistics = new GroupBox();
             lblStatUsers = new Label();
             lblTotalUsers = new Label();
-            lblStatEnrollments = new Label();
-            lblTotalEnrollments = new Label();
-            lblStatActiveUsers = new Label();
-            lblActiveUsers = new Label();
+            lblStatCourses = new Label();
+            lblTotalCourses = new Label();
+            lblStatResources = new Label();
+            lblTotalResources = new Label();
             grpSystemHealth = new GroupBox();
             lblDbStatusLabel = new Label();
             lblDbStatus = new Label();
@@ -166,10 +166,10 @@
             // 
             grpStatistics.Controls.Add(lblStatUsers);
             grpStatistics.Controls.Add(lblTotalUsers);
-            grpStatistics.Controls.Add(lblStatEnrollments);
-            grpStatistics.Controls.Add(lblTotalEnrollments);
-            grpStatistics.Controls.Add(lblStatActiveUsers);
-            grpStatistics.Controls.Add(lblActiveUsers);
+            grpStatistics.Controls.Add(lblStatCourses);
+            grpStatistics.Controls.Add(lblTotalCourses);
+            grpStatistics.Controls.Add(lblStatResources);
+            grpStatistics.Controls.Add(lblTotalResources);
             grpStatistics.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             grpStatistics.Location = new Point(20, 120);
             grpStatistics.Name = "grpStatistics";
@@ -198,45 +198,45 @@
             lblTotalUsers.TabIndex = 1;
             lblTotalUsers.Text = "0";
             // 
-            // lblStatEnrollments
+            // lblStatCourses
             // 
-            lblStatEnrollments.AutoSize = true;
-            lblStatEnrollments.Location = new Point(20, 80);
-            lblStatEnrollments.Name = "lblStatEnrollments";
-            lblStatEnrollments.Size = new Size(103, 18);
-            lblStatEnrollments.TabIndex = 2;
-            lblStatEnrollments.Text = "Enrollments:";
+            lblStatCourses.AutoSize = true;
+            lblStatCourses.Location = new Point(20, 80);
+            lblStatCourses.Name = "lblStatCourses";
+            lblStatCourses.Size = new Size(103, 18);
+            lblStatCourses.TabIndex = 2;
+            lblStatCourses.Text = "Total Courses:";
             // 
-            // lblTotalEnrollments
+            // lblTotalCourses
             // 
-            lblTotalEnrollments.AutoSize = true;
-            lblTotalEnrollments.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTotalEnrollments.ForeColor = Color.Green;
-            lblTotalEnrollments.Location = new Point(150, 80);
-            lblTotalEnrollments.Name = "lblTotalEnrollments";
-            lblTotalEnrollments.Size = new Size(19, 20);
-            lblTotalEnrollments.TabIndex = 3;
-            lblTotalEnrollments.Text = "0";
+            lblTotalCourses.AutoSize = true;
+            lblTotalCourses.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblTotalCourses.ForeColor = Color.Green;
+            lblTotalCourses.Location = new Point(150, 80);
+            lblTotalCourses.Name = "lblTotalCourses";
+            lblTotalCourses.Size = new Size(19, 20);
+            lblTotalCourses.TabIndex = 3;
+            lblTotalCourses.Text = "0";
             // 
-            // lblStatActiveUsers
+            // lblStatResources
             // 
-            lblStatActiveUsers.AutoSize = true;
-            lblStatActiveUsers.Location = new Point(20, 120);
-            lblStatActiveUsers.Name = "lblStatActiveUsers";
-            lblStatActiveUsers.Size = new Size(108, 18);
-            lblStatActiveUsers.TabIndex = 4;
-            lblStatActiveUsers.Text = "Active Users:";
+            lblStatResources.AutoSize = true;
+            lblStatResources.Location = new Point(20, 120);
+            lblStatResources.Name = "lblStatResources";
+            lblStatResources.Size = new Size(108, 18);
+            lblStatResources.TabIndex = 4;
+            lblStatResources.Text = "Total Resources:";
             // 
-            // lblActiveUsers
+            // lblTotalResources
             // 
-            lblActiveUsers.AutoSize = true;
-            lblActiveUsers.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblActiveUsers.ForeColor = Color.Orange;
-            lblActiveUsers.Location = new Point(150, 120);
-            lblActiveUsers.Name = "lblActiveUsers";
-            lblActiveUsers.Size = new Size(19, 20);
-            lblActiveUsers.TabIndex = 5;
-            lblActiveUsers.Text = "0";
+            lblTotalResources.AutoSize = true;
+            lblTotalResources.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblTotalResources.ForeColor = Color.Orange;
+            lblTotalResources.Location = new Point(150, 120);
+            lblTotalResources.Name = "lblTotalResources";
+            lblTotalResources.Size = new Size(19, 20);
+            lblTotalResources.TabIndex = 5;
+            lblTotalResources.Text = "0";
             // 
             // grpSystemHealth
             // 
