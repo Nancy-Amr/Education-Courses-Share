@@ -336,18 +336,12 @@ namespace CoursesSharesDB.Forms
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            // Clear the form fields
             ClearForm();
-
-            // Deselect any selected row in the grid
             if (dataGridViewUsers.CurrentRow != null)
             {
                 dataGridViewUsers.ClearSelection();
             }
-
-            // Optional: Set focus to the first field
             txtId.Focus();
-
             MessageBox.Show("Form has been reset. All fields cleared.", "Reset Form",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -366,6 +360,31 @@ namespace CoursesSharesDB.Forms
 
                 cmbRole.Text = selectedUser.Role;
                 txtProfilePic.Text = selectedUser.ProfilePicture;
+                
+                // Load profile picture
+                LoadProfilePicture(selectedUser.ProfilePicture);
+            }
+        }
+
+        private void LoadProfilePicture(string imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath) || !System.IO.File.Exists(imagePath))
+            {
+                pbProfilePic.Image = null; // Clear image if path is invalid
+                return;
+            }
+
+            try
+            {
+                // Load image from file (using FromStream to avoid locking the file)
+                using (var stream = new System.IO.FileStream(imagePath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                {
+                    pbProfilePic.Image = Image.FromStream(stream);
+                }
+            }
+            catch
+            {
+                pbProfilePic.Image = null; // Clear on error
             }
         }
 
@@ -387,6 +406,7 @@ namespace CoursesSharesDB.Forms
                         txtPassword.PasswordChar = '*';
                         cmbRole.Text = selectedUser.Role;
                         txtProfilePic.Text = selectedUser.ProfilePicture;
+                        LoadProfilePicture(selectedUser.ProfilePicture); // Load image
                     }
                     else if (e.ColumnIndex == dataGridViewUsers.Columns["colDelete"].Index)
                     {
@@ -423,6 +443,7 @@ namespace CoursesSharesDB.Forms
             txtPassword.PasswordChar = '*';
             cmbRole.SelectedIndex = -1;
             txtProfilePic.Clear();
+            pbProfilePic.Image = null; // Clear image
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -455,6 +476,24 @@ namespace CoursesSharesDB.Forms
             {
                 txtPassword.Text = "******";
                 txtPassword.PasswordChar = '*';
+            }
+        }
+
+        private void btnBrowse_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.png, *.bmp)|*.jpg;*.jpeg;*.png;*.bmp|All files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    // Get the path of specified file
+                    txtProfilePic.Text = openFileDialog.FileName;
+                    LoadProfilePicture(openFileDialog.FileName); // Preview selected image
+                }
             }
         }
     }

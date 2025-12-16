@@ -1,4 +1,5 @@
-﻿
+﻿using System.Windows.Forms;
+using System.Drawing;
 
 namespace CoursesSharesDB.Forms
 {
@@ -9,7 +10,8 @@ namespace CoursesSharesDB.Forms
         private Label label1, label2, label3, label4, label5, label6;
         private TextBox txtId, txtUsername, txtEmail, txtPassword, txtProfilePic;
         private ComboBox cmbRole;
-        private Button btnAdd, btnUpdate, btnDelete, btnClose, btnReset; // ADD btnReset
+        private Button btnAdd, btnUpdate, btnDelete, btnClose, btnReset, btnBrowse;
+        private PictureBox pbProfilePic;
         private DataGridViewButtonColumn colEdit, colDelete;
 
         protected override void Dispose(bool disposing)
@@ -24,17 +26,21 @@ namespace CoursesSharesDB.Forms
         private void InitializeComponent()
         {
             dataGridViewUsers = new DataGridView();
+            colEdit = new DataGridViewButtonColumn();
+            colDelete = new DataGridViewButtonColumn();
             txtId = new TextBox();
             txtUsername = new TextBox();
             txtEmail = new TextBox();
             txtPassword = new TextBox();
             txtProfilePic = new TextBox();
+            pbProfilePic = new PictureBox();
             cmbRole = new ComboBox();
             btnAdd = new Button();
             btnUpdate = new Button();
             btnDelete = new Button();
             btnClose = new Button();
-            btnReset = new Button(); // ADD THIS
+            btnReset = new Button();
+            btnBrowse = new Button();
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
@@ -42,6 +48,7 @@ namespace CoursesSharesDB.Forms
             label5 = new Label();
             label6 = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridViewUsers).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbProfilePic).BeginInit();
             SuspendLayout();
             // 
             // dataGridViewUsers
@@ -49,15 +56,32 @@ namespace CoursesSharesDB.Forms
             dataGridViewUsers.AllowUserToAddRows = false;
             dataGridViewUsers.AllowUserToDeleteRows = false;
             dataGridViewUsers.ColumnHeadersHeight = 29;
+            dataGridViewUsers.Columns.AddRange(new DataGridViewColumn[] { colEdit, colDelete });
             dataGridViewUsers.Location = new Point(12, 12);
             dataGridViewUsers.Name = "dataGridViewUsers";
             dataGridViewUsers.ReadOnly = true;
             dataGridViewUsers.RowHeadersWidth = 51;
-            dataGridViewUsers.Size = new Size(900, 400);
+            dataGridViewUsers.Size = new Size(835, 400);
             dataGridViewUsers.TabIndex = 0;
             dataGridViewUsers.SelectionChanged += dataGridViewUsers_SelectionChanged;
             dataGridViewUsers.CellContentClick += dataGridViewUsers_CellContentClick;
             dataGridViewUsers.ColumnHeaderMouseClick += dataGridViewUsers_ColumnHeaderMouseClick;
+            // 
+            // colEdit
+            // 
+            colEdit.HeaderText = "Edit";
+            colEdit.Name = "colEdit";
+            colEdit.Text = "Edit";
+            colEdit.UseColumnTextForButtonValue = true;
+            colEdit.Width = 80;
+            // 
+            // colDelete
+            // 
+            colDelete.HeaderText = "Delete";
+            colDelete.Name = "colDelete";
+            colDelete.Text = "Delete";
+            colDelete.UseColumnTextForButtonValue = true;
+            colDelete.Width = 80;
             // 
             // txtId
             // 
@@ -77,7 +101,7 @@ namespace CoursesSharesDB.Forms
             // 
             txtEmail.Location = new Point(120, 510);
             txtEmail.Name = "txtEmail";
-            txtEmail.Size = new Size(250, 27);
+            txtEmail.Size = new Size(200, 27);
             txtEmail.TabIndex = 3;
             // 
             // txtPassword
@@ -86,16 +110,26 @@ namespace CoursesSharesDB.Forms
             txtPassword.Name = "txtPassword";
             txtPassword.Size = new Size(200, 27);
             txtPassword.TabIndex = 4;
-            txtPassword.PasswordChar = '*'; // ADD THIS LINE
-            txtPassword.Enter += txtPassword_Enter; // ADD THIS EVENT
-            txtPassword.Leave += txtPassword_Leave; // ADD THIS EVENT
+            txtPassword.PasswordChar = '*';
+            txtPassword.Enter += txtPassword_Enter;
+            txtPassword.Leave += txtPassword_Leave;
             // 
             // txtProfilePic
             // 
             txtProfilePic.Location = new Point(450, 510);
             txtProfilePic.Name = "txtProfilePic";
-            txtProfilePic.Size = new Size(250, 27);
+            txtProfilePic.Size = new Size(200, 27);
             txtProfilePic.TabIndex = 6;
+            // 
+            // pbProfilePic
+            // 
+            pbProfilePic.Location = new Point(860, 50);
+            pbProfilePic.Name = "pbProfilePic";
+            pbProfilePic.Size = new Size(100, 100);
+            pbProfilePic.SizeMode = PictureBoxSizeMode.Zoom;
+            pbProfilePic.TabIndex = 17;
+            pbProfilePic.TabStop = false;
+            pbProfilePic.BorderStyle = BorderStyle.FixedSingle;
             // 
             // cmbRole
             // 
@@ -173,6 +207,19 @@ namespace CoursesSharesDB.Forms
             btnReset.UseVisualStyleBackColor = false;
             btnReset.Click += btnReset_Click;
             // 
+            // btnBrowse
+            // 
+            btnBrowse.BackColor = Color.Gray;
+            btnBrowse.FlatStyle = FlatStyle.Flat;
+            btnBrowse.ForeColor = Color.White;
+            btnBrowse.Location = new Point(660, 510);
+            btnBrowse.Name = "btnBrowse";
+            btnBrowse.Size = new Size(40, 27);
+            btnBrowse.TabIndex = 12;
+            btnBrowse.Text = "...";
+            btnBrowse.UseVisualStyleBackColor = false;
+            btnBrowse.Click += btnBrowse_Click;
+            // 
             // label1
             // 
             label1.AutoSize = true;
@@ -229,14 +276,16 @@ namespace CoursesSharesDB.Forms
             // 
             // UserManagementForm
             // 
-            ClientSize = new Size(924, 563);
+            ClientSize = new Size(980, 580);
+            Controls.Add(pbProfilePic);
             Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
-            Controls.Add(btnReset); // ADD THIS
+            Controls.Add(btnReset);
+            Controls.Add(btnBrowse);
             Controls.Add(btnClose);
             Controls.Add(btnDelete);
             Controls.Add(btnUpdate);
@@ -252,6 +301,7 @@ namespace CoursesSharesDB.Forms
             Text = "User Management";
             Load += UserManagementForm_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewUsers).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbProfilePic).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
