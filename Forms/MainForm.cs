@@ -209,24 +209,60 @@ namespace CoursesSharesDB.Forms
                 return;
             }
 
-            // Ask for admin password confirmation
-            string password = Microsoft.VisualBasic.Interaction.InputBox(
-                "Enter admin password:",
-                "Admin Verification",
-                "",
-                -1,
-                -1);
+            // Verify admin password with max 3 attempts
+            int attempts = 0;
+            const int maxAttempts = 3;
+            bool isAuthenticated = false;
 
-            // Validate password against the current logged-in admin's password
-            if (PasswordHelper.VerifyPassword(password, SessionManager.CurrentUser.Password))
+            while (attempts < maxAttempts)
+            {
+                // Ask for admin password confirmation
+                // Use a custom dialog or InputBox. Note: InputBox does not mask password characters.
+                // Reusing PromptForAdminPassword method for better UX (masked characters)
+                string password = PromptForAdminPassword();
+
+                // If user cancels (returns empty or null), break
+                if (string.IsNullOrEmpty(password))
+                {
+                    return;
+                }
+
+                // Increase attempt counter
+                attempts++;
+
+                // Validate password against the current logged-in admin's password
+                // Note: SessionManager.CurrentUser.Password contains the HASHED password.
+                // We need to hash the input password and compare, or use a Verify method if available.
+                // Assuming PasswordHelper.VerifyPassword handles (plain, hash) comparison.
+                if (PasswordHelper.VerifyPassword(password, SessionManager.CurrentUser.Password))
+                {
+                    isAuthenticated = true;
+                    break;
+                }
+                else
+                {
+                    int remaining = maxAttempts - attempts;
+                    if (remaining > 0)
+                    {
+                        MessageBox.Show($"Invalid password! You have {remaining} attempt(s) remaining.",
+                            "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
+
+            if (isAuthenticated)
             {
                 var adminTools = new AdminToolsForm();
                 adminTools.ShowDialog();
             }
             else
             {
-                MessageBox.Show("Invalid admin password!",
-                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Maximum attempts exceeded. You will be logged out.",
+                    "Security Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                // Logout logic
+                SessionManager.Logout();
+                this.Close(); // Close MainForm to return to Login logic in Program.cs
             }
         }
 
