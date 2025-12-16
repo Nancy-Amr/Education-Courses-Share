@@ -20,7 +20,7 @@ db.users.createIndex({ username: 1 }, { unique: true });
 db.users.createIndex({ email: 1 }, { unique: true });
 db.courses.createIndex({ code: 1 }, { unique: true });
 db.resources.createIndex({ course_code: 1 });
-db.resources.createIndex({ upload_date: -1 }); // Optimized for sorting by date
+db.resources.createIndex({ upload_date: -1 });
 db.resources.createIndex({ name: "text", description: "text" });
 db.saved_resources.createIndex({ user_id: 1, resource_id: 1 });
 db.comments.createIndex({ resource_id: 1 });
