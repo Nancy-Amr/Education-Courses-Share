@@ -37,5 +37,8 @@
     <Compile Update="Forms\UserManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forms\UserProfileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

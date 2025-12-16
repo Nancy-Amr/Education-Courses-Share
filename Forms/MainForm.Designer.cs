@@ -20,6 +20,7 @@
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnAdminTools;
+        private System.Windows.Forms.Button btnMyProfile;
 
         protected override void Dispose(bool disposing)
         {
@@ -250,7 +251,7 @@
             btnLogout.FlatStyle = FlatStyle.Flat;
             btnLogout.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnLogout.ForeColor = Color.White;
-            btnLogout.Location = new Point(688, 450);
+            btnLogout.Location = new Point(688, 520); // Swapped to bottom
             btnLogout.Margin = new Padding(4, 5, 4, 5);
             btnLogout.Name = "btnLogout";
             btnLogout.Size = new Size(188, 56);
@@ -275,6 +276,23 @@
             btnAdminTools.Visible = false;
             btnAdminTools.Click += btnAdminTools_Click;
             // 
+            // btnMyProfile
+            // 
+            btnMyProfile = new Button();
+            btnMyProfile.BackColor = Color.FromArgb(0, 123, 255);
+            btnMyProfile.FlatStyle = FlatStyle.Flat;
+            btnMyProfile.Font = new Font("Microsoft Sans Serif", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnMyProfile.ForeColor = Color.White;
+            btnMyProfile.Location = new Point(688, 450); // Swapped to top
+            btnMyProfile.Margin = new Padding(4, 5, 4, 5);
+            btnMyProfile.Name = "btnMyProfile";
+            btnMyProfile.Size = new Size(188, 56);
+            btnMyProfile.TabIndex = 12;
+            btnMyProfile.Text = "&My Profile";
+            btnMyProfile.UseVisualStyleBackColor = false;
+            btnMyProfile.Click += btnMyProfile_Click;
+            btnMyProfile.Visible = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -288,6 +306,7 @@
             Controls.Add(lblWelcome);
             Controls.Add(lblTitle);
             Controls.Add(btnLogout);
+            Controls.Add(btnMyProfile);
             Controls.Add(btnAdminTools);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Margin = new Padding(4, 5, 4, 5);

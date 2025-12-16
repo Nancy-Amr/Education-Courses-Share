@@ -229,5 +229,13 @@ namespace CoursesSharesDB.Forms
                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void btnMyProfile_Click(object sender, EventArgs e)
+        {
+            var profileForm = new UserProfileForm();
+            profileForm.ShowDialog();
+            // Refresh welcome message in case profile updated
+            UpdateUserInfo();
+        }
     }
 }
