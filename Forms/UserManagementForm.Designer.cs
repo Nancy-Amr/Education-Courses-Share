@@ -185,7 +185,7 @@ namespace CoursesSharesDB.Forms
             btnClose.BackColor = Color.FromArgb(108, 117, 125);
             btnClose.FlatStyle = FlatStyle.Flat;
             btnClose.ForeColor = Color.White;
-            btnClose.Location = new Point(820, 515);
+            btnClose.Location = new Point(865, 515);
             btnClose.Name = "btnClose";
             btnClose.Size = new Size(90, 35);
             btnClose.TabIndex = 11;
