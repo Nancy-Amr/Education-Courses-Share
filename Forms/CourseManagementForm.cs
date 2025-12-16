@@ -85,12 +85,25 @@ namespace CoursesSharesDB.Forms
             }
             else if (SessionManager.IsInstructor)
             {
-                // Instructors: can only add courses they will instruct
-                // Update/Delete will be validated per-course in the button click handlers
-                btnAdd.Enabled = true;
-                btnUpdate.Enabled = true;
-                btnDelete.Enabled = true;
+                // Instructors: Restricted access
+                // Can Update ONLY Description. Can Manage Topics.
+                // Cannot Add or Delete courses.
+                btnAdd.Enabled = false;
+                btnUpdate.Enabled = true; // Enabled for Description updates
+                btnDelete.Enabled = false;
                 btnManageTopics.Enabled = true;
+
+                // Visual cue
+                btnAdd.BackColor = Color.LightGray;
+                btnUpdate.BackColor = Color.FromArgb(0, 123, 255); // Blue (Active)
+                btnDelete.BackColor = Color.LightGray;
+                btnManageTopics.BackColor = Color.FromArgb(0, 123, 255);
+
+                // Lock fields preventing modification
+                txtName.ReadOnly = true;
+                cmbDepartments.Enabled = false;
+                lstInstructors.Enabled = false; 
+                // txtCode is already handled in SelectionChanged
             }
             // Admin has full access (all buttons enabled by default)
         }
