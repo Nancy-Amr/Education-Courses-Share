@@ -21,8 +21,20 @@ namespace CoursesSharesDB.Forms
             lblError.Visible = false;
 
             // For demo purposes, set default credentials
-            txtUsername.Text = ""; // or "malak_mohamed" if that's your admin username
-            txtPassword.Text = ""; // Default password
+            txtUsername.Text = ""; 
+            txtPassword.Text = ""; 
+        }
+
+        private void chkShowPassword_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkShowPassword.Checked)
+            {
+                txtPassword.PasswordChar = '\0';
+            }
+            else
+            {
+                txtPassword.PasswordChar = '*';
+            }
         }
 
         // In LoginForm.cs, replace the password check in btnLogin_Click:

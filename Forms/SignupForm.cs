@@ -62,6 +62,7 @@ namespace Education_Courses.Forms
                 // Create new user
                 var user = new User
                 {
+                    Id = _repository.GetNextUserId(cmbRole.SelectedItem.ToString()), // Pass role for ID generation
                     Username = txtUsername.Text.Trim(),
                     Email = txtEmail.Text.Trim(),
                     Password = PasswordHelper.HashPassword(txtPassword.Text), // ✅ Hash here
@@ -138,8 +139,16 @@ namespace Education_Courses.Forms
 
         private void chkShowPassword_CheckedChanged(object sender, EventArgs e)
         {
-            txtPassword.UseSystemPasswordChar = !chkShowPassword.Checked;
-            txtConfirmPassword.UseSystemPasswordChar = !chkShowPassword.Checked;
+            if (chkShowPassword.Checked)
+            {
+                txtPassword.PasswordChar = '\0';
+                txtConfirmPassword.PasswordChar = '\0';
+            }
+            else
+            {
+                txtPassword.PasswordChar = '*';
+                txtConfirmPassword.PasswordChar = '*';
+            }
         }
 
         private void btnBrowseImage_Click(object sender, EventArgs e)

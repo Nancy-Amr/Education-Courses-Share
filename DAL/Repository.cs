@@ -178,10 +178,20 @@ namespace CoursesSharesDB.DAL
         }
 
         // ID Generation Methods
-        public int GetNextUserId()
+        public int GetNextUserId(string role)
         {
             var users = GetAllUsers();
-            return users.Count > 0 ? users.Max(u => u.Id) + 1 : 1;
+            var ids = new HashSet<int>(users.Select(u => u.Id));
+            
+            // Determine starting ID based on role
+            int nextId = (role.ToLower() == "admin") ? 100 : 1;
+
+            // Find first available ID from the starting point
+            while (ids.Contains(nextId))
+            {
+                nextId++;
+            }
+            return nextId;
         }
 
         // Search Operations

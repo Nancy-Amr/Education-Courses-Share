@@ -12,7 +12,7 @@ namespace CoursesSharesDB.Forms
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSignup;
-        private System.Windows.Forms.CheckBox chkRememberMe;
+        private System.Windows.Forms.CheckBox chkShowPassword;
         private System.Windows.Forms.Label lblError;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.GroupBox grpLogin;
@@ -38,7 +38,7 @@ namespace CoursesSharesDB.Forms
             btnLogin = new Button();
             btnCancel = new Button();
             btnSignup = new Button();
-            chkRememberMe = new CheckBox();
+            chkShowPassword = new CheckBox();
             lblError = new Label();
             pictureBox1 = new PictureBox();
             grpLogin = new GroupBox();
@@ -143,17 +143,18 @@ namespace CoursesSharesDB.Forms
             btnSignup.UseVisualStyleBackColor = false;
             btnSignup.Click += btnSignup_Click;
             // 
-            // chkRememberMe
+            // chkShowPassword
             // 
-            chkRememberMe.AutoSize = true;
-            chkRememberMe.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            chkRememberMe.Location = new Point(120, 140);
-            chkRememberMe.Margin = new Padding(3, 4, 3, 4);
-            chkRememberMe.Name = "chkRememberMe";
-            chkRememberMe.Size = new Size(129, 22);
-            chkRememberMe.TabIndex = 3;
-            chkRememberMe.Text = "Remember me";
-            chkRememberMe.UseVisualStyleBackColor = true;
+            chkShowPassword.AutoSize = true;
+            chkShowPassword.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            chkShowPassword.Location = new Point(120, 140);
+            chkShowPassword.Margin = new Padding(3, 4, 3, 4);
+            chkShowPassword.Name = "chkShowPassword";
+            chkShowPassword.Size = new Size(129, 22);
+            chkShowPassword.TabIndex = 3;
+            chkShowPassword.Text = "Show Password";
+            chkShowPassword.UseVisualStyleBackColor = true;
+            chkShowPassword.CheckedChanged += chkShowPassword_CheckedChanged;
             // 
             // lblError
             // 
@@ -182,7 +183,7 @@ namespace CoursesSharesDB.Forms
             grpLogin.Controls.Add(lblPassword);
             grpLogin.Controls.Add(txtUsername);
             grpLogin.Controls.Add(txtPassword);
-            grpLogin.Controls.Add(chkRememberMe);
+            grpLogin.Controls.Add(chkShowPassword);
             grpLogin.Controls.Add(btnLogin);
             grpLogin.Controls.Add(btnCancel);
             grpLogin.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);

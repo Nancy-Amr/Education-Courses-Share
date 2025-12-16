@@ -223,7 +223,7 @@ namespace CoursesSharesDB.Forms
 
                 var user = new User
                 {
-                    Id = string.IsNullOrWhiteSpace(txtId.Text) ? 0 : int.Parse(txtId.Text),
+                    Id = _repository.GetNextUserId(cmbRole.Text), // Pass role for custom ID range
                     Username = txtUsername.Text,
                     Email = txtEmail.Text,
                     Password = PasswordHelper.HashPassword(txtPassword.Text), // Hash password before storing
@@ -280,7 +280,10 @@ namespace CoursesSharesDB.Forms
                         Email = txtEmail.Text,
                         Password = passwordToUse,
                         Role = cmbRole.Text,
-                        ProfilePicture = txtProfilePic.Text
+                        ProfilePicture = txtProfilePic.Text,
+                        CreatedAt = (existingUser != null && existingUser.CreatedAt != DateTime.MinValue) 
+                                    ? existingUser.CreatedAt 
+                                    : DateTime.Now // Preserve or set default
                     };
 
                     if (_repository.UpdateUser(user))
