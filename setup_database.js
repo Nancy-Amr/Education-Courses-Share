@@ -20,12 +20,11 @@ db.users.createIndex({ username: 1 }, { unique: true });
 db.users.createIndex({ email: 1 }, { unique: true });
 db.courses.createIndex({ code: 1 }, { unique: true });
 db.resources.createIndex({ course_code: 1 });
-db.resources.createIndex({ uploader_username: 1 });
+db.resources.createIndex({ upload_date: -1 }); // Optimized for sorting by date
 db.resources.createIndex({ name: "text", description: "text" });
 db.saved_resources.createIndex({ user_id: 1, resource_id: 1 });
 db.comments.createIndex({ resource_id: 1 });
 
-// Departments
 db.departments.insertMany([
     { _id: 1, name: "Materials Engineering", description: "Materials Engineering Department" },
     { _id: 2, name: "Manufacturing Engineering", description: "Manufacturing Engineering Department" },
@@ -154,8 +153,8 @@ db.users.insertMany([
         _id: 100, // Use a high ID number to avoid conflicts
         username: "admin",
         email: "admin@courseshares.edu",
-        password: "admin123", 
-        role: "admin", 
+        password: "admin123",
+        role: "admin",
         profilePicture: null,
         createdAt: new Date("2025-01-01")
     },

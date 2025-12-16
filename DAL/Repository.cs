@@ -205,11 +205,31 @@ namespace CoursesSharesDB.DAL
 
         public List<Resource> SearchResources(string searchTerm)
         {
-            return _context.Resources.Find(r =>
-                r.Name.Contains(searchTerm) ||
-                r.Description.Contains(searchTerm) ||
-                r.CourseCode.Contains(searchTerm))
-                .ToList();
+            try
+            {
+                var filterBuilder = Builders<Resource>.Filter;
+                
+                // 1. Full-Text Search on Name & Description (Uses the 'text' index)
+                // matches "databases" -> "database", "run" -> "running", etc.
+                var textFilter = filterBuilder.Text(searchTerm);
+
+                // 2. Regex for Course Code (Partial match, e.g., "CSE")
+                var codeFilter = filterBuilder.Regex(r => r.CourseCode, new MongoDB.Bson.BsonRegularExpression(searchTerm, "i"));
+
+                // Combine: Find if it matches Text Index OR Course Code
+                var combinedFilter = filterBuilder.Or(textFilter, codeFilter);
+
+                return _context.Resources.Find(combinedFilter).ToList();
+            }
+            catch
+            {
+                // Fallback: If text index is missing, use legacy Contains (slower, exact substring only)
+                return _context.Resources.Find(r =>
+                    r.Name.Contains(searchTerm) ||
+                    r.Description.Contains(searchTerm) ||
+                    r.CourseCode.Contains(searchTerm))
+                    .ToList();
+            }
         }
 
         // Simulate logging activity (would store in a real system)
