@@ -118,9 +118,7 @@
             btnRefresh = new Button();
             btnRunBackup = new Button();
             btnUserManagement = new Button();
-
             btnExportData = new Button();
-
             btnClose = new Button();
             linkLabelHelp = new LinkLabel();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -203,7 +201,7 @@
             lblStatCourses.AutoSize = true;
             lblStatCourses.Location = new Point(20, 80);
             lblStatCourses.Name = "lblStatCourses";
-            lblStatCourses.Size = new Size(103, 18);
+            lblStatCourses.Size = new Size(120, 18);
             lblStatCourses.TabIndex = 2;
             lblStatCourses.Text = "Total Courses:";
             // 
@@ -223,7 +221,7 @@
             lblStatResources.AutoSize = true;
             lblStatResources.Location = new Point(20, 120);
             lblStatResources.Name = "lblStatResources";
-            lblStatResources.Size = new Size(108, 18);
+            lblStatResources.Size = new Size(138, 18);
             lblStatResources.TabIndex = 4;
             lblStatResources.Text = "Total Resources:";
             // 
@@ -434,9 +432,9 @@
             btnClearLogs.FlatStyle = FlatStyle.Flat;
             btnClearLogs.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnClearLogs.ForeColor = Color.White;
-            btnClearLogs.Location = new Point(830, 200);
+            btnClearLogs.Location = new Point(823, 200);
             btnClearLogs.Name = "btnClearLogs";
-            btnClearLogs.Size = new Size(100, 30);
+            btnClearLogs.Size = new Size(107, 34);
             btnClearLogs.TabIndex = 1;
             btnClearLogs.Text = "Clear Logs";
             btnClearLogs.UseVisualStyleBackColor = false;
@@ -592,7 +590,6 @@
             btnUserManagement.Text = "&User Management";
             btnUserManagement.UseVisualStyleBackColor = false;
             btnUserManagement.Click += btnUserManagement_Click;
-
             // 
             // btnExportData
             // 
@@ -607,7 +604,6 @@
             btnExportData.Text = "&Export Data";
             btnExportData.UseVisualStyleBackColor = false;
             btnExportData.Click += btnExportData_Click;
-
             // 
             // btnClose
             // 
@@ -642,9 +638,7 @@
             ClientSize = new Size(1000, 710);
             Controls.Add(linkLabelHelp);
             Controls.Add(btnClose);
-
             Controls.Add(btnExportData);
-
             Controls.Add(btnUserManagement);
             Controls.Add(btnRunBackup);
             Controls.Add(btnRefresh);
