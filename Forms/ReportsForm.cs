@@ -143,7 +143,7 @@ namespace CoursesSharesDB.Forms
 
         private void btnCourseResourceSummary_Click(object sender, EventArgs e)
         {
-            lblReportDescription.Text = "Course Resource Summary (Resources count by type per course)";
+            lblReportDescription.Text = "Course Resource Summary (Total resources count per course)";
 
             // Pipeline 3: Course resource summary for all courses
             var pipeline = new[]
@@ -169,13 +169,21 @@ namespace CoursesSharesDB.Forms
                 BsonDocument.Parse(@"{
                     $group: {
                         _id: '$_id.course',
-                        resources_summary: { 
-                            $push: { 
-                                type: '$_id.type', 
-                                quantity: '$count' 
-                            } 
-                        },
                         total_materials: { $sum: '$count' }
+                    }
+                }"),
+                BsonDocument.Parse(@"{
+                    $lookup: {
+                        from: 'courses',
+                        localField: '_id',
+                        foreignField: 'code',
+                        as: 'course_info'
+                    }
+                }"),
+                BsonDocument.Parse(@"{
+                    $unwind: {
+                        path: '$course_info',
+                        preserveNullAndEmptyArrays: true
                     }
                 }"),
                 BsonDocument.Parse(@"{ $sort: { total_materials: -1 } }"),
@@ -183,7 +191,7 @@ namespace CoursesSharesDB.Forms
                     $project: {
                         _id: 0,
                         course_code: '$_id',
-                        resources_summary: 1,
+                        course_name: { $ifNull: ['$course_info.name', 'Unknown'] },
                         total_materials: 1
                     }
                 }")
