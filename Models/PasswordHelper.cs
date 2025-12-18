@@ -1,5 +1,4 @@
-﻿// CORRECT PasswordHelper.cs
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
 namespace Education_Courses.Helpers
@@ -10,7 +9,7 @@ namespace Education_Courses.Helpers
         {
             using (var sha256 = SHA256.Create())
             {
-                // IMPORTANT: Use UTF8 encoding
+                // Use UTF8 encoding
                 var bytes = Encoding.UTF8.GetBytes(password);
                 var hash = sha256.ComputeHash(bytes);
                 return Convert.ToBase64String(hash);

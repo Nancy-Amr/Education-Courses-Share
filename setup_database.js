@@ -16,14 +16,14 @@ db.createCollection("comments");
 db.createCollection("resource_categories");
 
 // Create indexes for better performance
-db.users.createIndex({ username: 1 }, { unique: true });
-db.users.createIndex({ email: 1 }, { unique: true });
-db.courses.createIndex({ code: 1 }, { unique: true });
-db.resources.createIndex({ course_code: 1 });
-db.resources.createIndex({ upload_date: -1 });
-db.resources.createIndex({ name: "text", description: "text" });
-db.saved_resources.createIndex({ user_id: 1, resource_id: 1 });
-db.comments.createIndex({ resource_id: 1 });
+db.users.createIndex({ username: 1 }, { unique: true });    // used for Login queries
+db.users.createIndex({ email: 1 }, { unique: true });    // used to prevent duplicate registration
+db.courses.createIndex({ code: 1 }, { unique: true });    // used to find courses
+db.resources.createIndex({ course_code: 1 });    // used to list resources for a specific course
+db.resources.createIndex({ upload_date: -1 });    // used to sort Recent Activity List
+db.resources.createIndex({ name: "text", description: "text" });    // used to search resources
+db.saved_resources.createIndex({ user_id: 1, resource_id: 1 });    // used to quickly check if a resource is saved by a user
+db.comments.createIndex({ resource_id: 1 });    // used to load comments for a specific resource
 
 db.departments.insertMany([
     { _id: 1, name: "Materials Engineering", description: "Materials Engineering Department" },
@@ -1387,11 +1387,11 @@ db.runCommand({
                 },
                 password: {
                     bsonType: "string",
-                    minLength: 8,
+                    minLength: 44,
                     description: "Password hash must be a string with at least 8 characters"
                 },
                 role: {
-                    enum: ["student", "instructor"],
+                    enum: ["student", "instructor", "admin"],
                     description: "Role must be either 'student' or 'instructor'"
                 },
                 profilePicture: {
