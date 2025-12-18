@@ -151,25 +151,58 @@ namespace CoursesSharesDB.Forms
         private void btnAdminRegister_Click(object sender, EventArgs e)
         {
             // Only allow access if current user is admin
-            if (SessionManager.CurrentUser == null || SessionManager.CurrentUser.Role != "admin")
+            if (SessionManager.CurrentUser == null || 
+                !SessionManager.CurrentUser.Role.Equals("admin", StringComparison.OrdinalIgnoreCase))
             {
                 MessageBox.Show("Only administrators can access this feature.",
                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Prompt for admin password
-            string adminPassword = PromptForAdminPassword();
+            // Verify admin password with max 3 attempts
+            int attempts = 0;
+            const int maxAttempts = 3;
+            bool isAuthenticated = false;
 
-            if (adminPassword == "admin123!") // Change this to match your validation
+            while (attempts < maxAttempts)
+            {
+                // Prompt for admin password
+                string adminPassword = PromptForAdminPassword();
+
+                // If user cancels (returns empty or null), break
+                if (string.IsNullOrEmpty(adminPassword))
+                {
+                    return;
+                }
+
+                attempts++;
+
+                // Validate password against the current admin's hashed password from database
+                if (PasswordHelper.VerifyPassword(adminPassword, SessionManager.CurrentUser.Password))
+                {
+                    isAuthenticated = true;
+                    break;
+                }
+                else
+                {
+                    int remaining = maxAttempts - attempts;
+                    if (remaining > 0)
+                    {
+                        MessageBox.Show($"Invalid password! You have {remaining} attempt(s) remaining.",
+                            "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
+
+            if (isAuthenticated)
             {
                 var signUpForm = new Education_Courses.Forms.SignUpForm();
                 signUpForm.ShowDialog();
             }
             else
             {
-                MessageBox.Show("Invalid admin password!", "Access Denied",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Maximum attempts exceeded. Access denied.",
+                    "Security Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
